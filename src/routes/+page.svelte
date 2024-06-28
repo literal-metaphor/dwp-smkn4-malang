@@ -1,52 +1,38 @@
 <script lang="ts">
     import type { PageData } from './$types';
 
+    // Components
+    import FeaturedProduct from '$lib/components/featured_product.svelte';
+
     // Images
     import bannerex from "$lib/assets/bannerex.svg";
     import shirtex from "$lib/assets/shirtex.svg";
+	import CategoryButton from '$lib/components/category_button.svelte';
+	import ProductCard from '$lib/components/product_card.svelte';
 
     export let data: PageData;
 </script>
 
-<div class={`container flex justify-content flex-col w-screen h-fit p-4`}>
-    <!-- Features Product -->
+<div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
+
+    <!-- Featured product -->
     <h2 class={`text-lg font-bold`}>
         Produk Unggulan
     </h2>
 
     <br>
 
-    <div class={`relative w-[90vw] h-[180px] flex justify-center items-center`}>
-        <img src={`${bannerex}`} class={`absolute inset-0 w-[90vw] h-[180px] object-cover rounded-lg`} alt=""/>
-        <div class={`relative text-center`}>
-            <h1 class={`text-lg text-white mb-4`}>
-                Koleksi Baju Modern
-            </h1>
-            <button type="button" class={`text-black bg-white focus:scale-95 rounded-full text-sm px-4 py-2 transition duration-300`}>
-                Lihat Selengkapnya →
-            </button>
-        </div>
-    </div>
+    <FeaturedProduct banner={bannerex} heading={`Koleksi Baju Modern`} />
 
     <br>
 
     <!-- Categories -->
     <div class={`flex items-center overflow-x-auto`}>
-        <button type="button" class={`me-2 text-white bg-french-violet rounded-full text-sm px-4 py-2 transition duration-300`}>
-            Semua
-        </button>
-        <button type="button" class={`me-2 text-black bg-white rounded-full text-sm px-4 py-2 transition duration-300`}>
-            Fashion
-        </button>
-        <button type="button" class={`me-2 text-black bg-white rounded-full text-sm px-4 py-2 transition duration-300`}>
-            Peralatan
-        </button>
-        <button type="button" class={`me-2 text-black bg-white rounded-full text-sm px-4 py-2 transition duration-300`}>
-            Sembako
-        </button>
-        <button type="button" class={`me-2 text-black bg-white rounded-full text-sm px-4 py-2 transition duration-300`}>
-            Perabotan
-        </button>
+        <CategoryButton current={true} label={`Semua`} />
+        <CategoryButton current={false} label={`Fashion`} />
+        <CategoryButton current={false} label={`Peralatan`} />
+        <CategoryButton current={false} label={`Sembako`} />
+        <CategoryButton current={false} label={`Perabotan`} />
      </div>
 
      <br>
@@ -63,5 +49,16 @@
             <input type="text" id="search" name="search" class={`block w-full p-4 ps-10 text-sm text-black rounded-lg bg-white border border-grey focus:ring-1 focus:ring-french-violet focus:outline-none transition duration-300`} placeholder="Cari merek atau produk" autocomplete="off" required/>
         </div>
     </form>
-    
+
+    <br>
+
+    <!-- Products -->
+    <div class={`flex items-center flex-wrap`}>
+        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
+        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
+        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
+        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
+        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
+    </div>
+
 </div>
