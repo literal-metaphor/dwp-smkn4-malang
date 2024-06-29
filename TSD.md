@@ -2,9 +2,9 @@
 
 ### Skala Prioritas Berbasis SPICE:
 
-- Scalability: Pada waktu dekat ini, aplikasinya hanya digunakan di sekitar wilayah SMKN 4 Malang.
+- Scalability: Pada waktu dekat ini, aplikasi hanya ditargetkan sekitar wilayah SMKN 4 Malang saja.
 - Performance: Membutuhkan kecepatan sedang, standar aplikasi e-commerce.
-- Integrasi: Pada waktu dekat ini akan ada metode pembayaran berupa COD, serta penggunaan WhatsApp untuk chat antara customer-merchant.
+- Integrasi: Pada waktu dekat ini metode pembayaran berupa COD, serta penggunaan WhatsApp untuk chat antara customer-merchant.
 - Cybersecurity: Prioritas tinggi, karena berurusan dengan keuangan.
 - Essential Features: Autentikasi akun, pembayaran COD, review produk, CRUD produk, riwayat jual beli, user moderation oleh admin.
 
@@ -20,7 +20,7 @@
 
 - PHP -> Bahasa pemrograman utama untuk server-side.
 - Leaf -> Framework PHP yang ringan dan cepat, digunakan untuk membangun RESTful API.
-- MySQL -> Relational database management system dengan arsitektur database yang terstruktur.
+- MariaDB -> Relational database management system dengan arsitektur database yang terstruktur.
 - Eloquent ORM -> ORM yang digunakan untuk mempermudah interaksi dengan database.
 - BCrypt -> Untuk hashing password dan keamanan data pengguna.
 - JWT -> Convention untuk token-based authentication.
@@ -33,11 +33,11 @@
 
 - Registrasi Pengguna:
   - Frontend (Svelte, Yup): Menggunakan form registrasi untuk mengumpulkan data pengguna (email, password, dll.). Validasi data dilakukan menggunakan Yup.
-  - Backend (Leaf, BCrypt, JWT, MySQL): Data form dikirim ke backend menggunakan Fetch API. Backend meng-hash password dengan BCrypt dan menyimpan data pengguna ke MySQL. Setelah berhasil registrasi, backend mengirimkan token JWT ke frontend sebagai bukti autentikasi.
+  - Backend (Leaf, BCrypt, JWT, MariaDB): Data form dikirim ke backend menggunakan Fetch API. Backend meng-hash password dengan BCrypt dan menyimpan data pengguna ke MariaDB. Setelah berhasil registrasi, backend mengirimkan token JWT ke frontend sebagai bukti autentikasi.
 
 - Login Pengguna:
   - Frontend (Svelte): Menggunakan form login untuk memasukkan email dan password. Validasi data dilakukan menggunakan Yup.
-  - Backend (Leaf, BCrypt, JWT, MySQL): Data form dikirim ke backend menggunakan Fetch API. Backend memverifikasi email dan password yang di-hash, dan jika valid, mengirimkan token JWT ke frontend. Token ini disimpan di local storage atau cookie untuk autentikasi selanjutnya.
+  - Backend (Leaf, BCrypt, JWT, MariaDB): Data form dikirim ke backend menggunakan Fetch API. Backend memverifikasi email dan password yang di-hash, dan jika valid, mengirimkan token JWT ke frontend. Token ini disimpan di local storage atau cookie untuk autentikasi selanjutnya.
 
 - Proteksi Rute:
   - Frontend (Svelte): Melakukan pengecekan token JWT sebelum mengizinkan akses ke halaman yang dilindungi.
@@ -50,39 +50,39 @@
 
 - Membuat Pesanan:
   - Frontend (Svelte): Setelah pengguna siap untuk checkout, data troli dikirim ke backend menggunakan Fetch API.
-  - Backend (Leaf, MySQL): Backend menerima data pesanan, menyimpannya di database MySQL, dan mengirimkan konfirmasi pesanan ke frontend.
+  - Backend (Leaf, MariaDB): Backend menerima data pesanan, menyimpannya di database MariaDB, dan mengirimkan konfirmasi pesanan ke frontend.
 
 ## 💰 Pembayaran
 
 - Konfirmasi Pesanan:
   - Frontend (Svelte): Data pesanan dan pilihan pembayaran dikirim ke backend menggunakan Fetch API.
-  - Backend (Leaf, MySQL): Backend menyimpan informasi pesanan dan metode pembayaran di MySQL. Mengirimkan konfirmasi pesanan ke frontend dan meng-update status pesanan.
+  - Backend (Leaf, MariaDB): Backend menyimpan informasi pesanan dan metode pembayaran di MariaDB. Mengirimkan konfirmasi pesanan ke frontend dan meng-update status pesanan.
 
 ⭐ Ulasan Produk oleh User
 - CRUD Ulasan:
   - Frontend (Svelte): Untuk read, mengambil ulasan dari backend menggunakan Fetch API dan menampilkan ulasan di halaman produk. Untuk create, update, dan delete menggunakan Fetch API untuk berinteraksi dengan backend.
-  - Backend (Leaf, MySQL): Endpoint untuk CRUD ulasan produk dari database MySQL dan mengirimkannya ke frontend.
+  - Backend (Leaf, MariaDB): Endpoint untuk CRUD ulasan produk dari database MariaDB dan mengirimkannya ke frontend.
 
 ## 📦 Pengelolaan (CRUD) Produk untuk Guru-guru Penjual
 
 - CRUD Produk:
   - Frontend (Svelte): Menggunakan form untuk memasukkan data produk baru atau mengedit data produk yang sudah ada. Validasi data dilakukan menggunakan Yup.
-  - Backend (Leaf, MySQL): Data produk dikirim ke backend menggunakan Fetch API. Backend memvalidasi dan menyimpan data produk ke database MySQL.
+  - Backend (Leaf, MariaDB): Data produk dikirim ke backend menggunakan Fetch API. Backend memvalidasi dan menyimpan data produk ke database MariaDB.
 
 ## ⏲ Riwayat Jual Beli
 
 - Menyimpan Riwayat Jual Beli:
-  - Backend (Leaf, MySQL): Setiap kali pesanan dibuat atau statusnya diperbarui, informasi ini disimpan di database MySQL.
+  - Backend (Leaf, MariaDB): Setiap kali pesanan dibuat atau statusnya diperbarui, informasi ini disimpan di database MariaDB.
 
 - Menampilkan Riwayat Jual Beli:
   - Frontend (Svelte): Mengambil data riwayat jual beli dari backend menggunakan Fetch API dan menampilkannya di halaman riwayat.
-  - Backend (Leaf, MySQL): Endpoint untuk mendapatkan data riwayat jual beli dari database MySQL dan mengirimkannya ke frontend.
+  - Backend (Leaf, MariaDB): Endpoint untuk mendapatkan data riwayat jual beli dari database MariaDB dan mengirimkannya ke frontend.
 
 ## 👥 User Moderation oleh Admin Sekolah
 
 - Moderasi Konten:
   - Frontend (Svelte): Admin memiliki akses ke halaman moderasi untuk CRUD konten yang dibuat oleh pengguna.
-  - Backend (Leaf, MySQL): Endpoint untuk melakukan operasi CRUD pada data pengguna, produk, dan ulasan di database MySQL.
+  - Backend (Leaf, MariaDB): Endpoint untuk melakukan operasi CRUD pada data pengguna, produk, dan ulasan di database MariaDB.
 
 ---
 
@@ -90,6 +90,6 @@
 
 - Frontend (Svelte) menangani antarmuka pengguna dan interaksi. Menggunakan Fetch API untuk berkomunikasi dengan backend.
 - Backend (Leaf) mengelola logika bisnis dan menyediakan endpoint API untuk operasi CRUD, autentikasi, dan validasi.
-- Database (MySQL) menyimpan semua data aplikasi termasuk pengguna, produk, pesanan, ulasan, dan riwayat jual beli.
+- Database (MariaDB) menyimpan semua data aplikasi termasuk pengguna, produk, pesanan, ulasan, dan riwayat jual beli.
 - Keamanan dijamin dengan penggunaan JWT untuk autentikasi dan BCrypt untuk hashing password.
 - Dependency Management dilakukan dengan Composer untuk mengelola libraries PHP yang digunakan.

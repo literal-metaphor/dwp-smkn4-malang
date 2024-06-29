@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use Illuminate\Support\Facades\Request;
-
 /**
  * This is the base controller for your Leaf MVC Project.
  * You can initialize packages or define methods here to use

@@ -1,0 +1,39 @@
+services:
+  application:
+    build: ./docker
+    restart: always
+    image: leafphp/docker
+    ports:
+      - '8080:80'
+    networks:
+      - dwp-smkn4-malang-net
+    volumes:
+      - .:/var/www
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      - dwp-smkn4-malang-net
+    volumes:
+      - ./db-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - dwp-smkn4-malang-net
+    volumes:
+      - ./pma-data:/var/lib/mysql
+
+networks:
+  dwp-smkn4-malang-net:
+    driver: bridge
