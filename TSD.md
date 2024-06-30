@@ -10,22 +10,22 @@
 
 ### Frontend:
 
-- Svelte -> Framework JS yang sederhana pada frontend.
-- SvelteKit -> Memperkuat Svelte dengan berbagai fitur, termasuk server-side rendering.
-- TailwindCSS -> CSS framework untuk styling yang cepat dan konsisten.
-- Fetch API -> Native JS API untuk melakukan HTTP requests (berkomunikasi dengan backend).
-- Yup -> Library untuk validasi schema, digunakan dalam form handling.
+- Svelte: Framework JS yang sederhana pada frontend.
+- SvelteKit: Memperkuat Svelte dengan berbagai fitur, termasuk server-side rendering.
+- TailwindCSS: CSS framework untuk styling yang cepat dan konsisten.
+- Fetch API: Native JS API untuk melakukan HTTP requests (berkomunikasi dengan backend).
+- Yup: Library untuk validasi schema, digunakan dalam form handling.
 
 ### Backend:
 
-- PHP -> Bahasa pemrograman utama untuk server-side.
-- Leaf -> Framework PHP yang ringan dan cepat, digunakan untuk membangun RESTful API.
-- MariaDB -> Relational database management system dengan arsitektur database yang terstruktur.
-- Eloquent ORM -> ORM yang digunakan untuk mempermudah interaksi dengan database.
-- BCrypt -> Untuk hashing password dan keamanan data pengguna.
-- JWT -> Convention untuk token-based authentication.
-- PHPUnit -> Untuk unit testing dan memastikan kualitas kode.
-- Composer -> Untuk depedency management PHP.
+- PHP: Bahasa pemrograman utama untuk server-side.
+- Leaf: Framework PHP yang ringan dan cepat, digunakan untuk membangun RESTful API.
+- MariaDB: Relational database management system dengan arsitektur database yang terstruktur.
+- Eloquent ORM: ORM yang digunakan untuk mempermudah interaksi dengan database.
+- BCrypt: Untuk hashing password dan keamanan data pengguna.
+- JWT: Convention untuk token-based authentication.
+- PHPUnit: Untuk unit testing dan memastikan kualitas kode.
+- Composer: Untuk depedency management PHP.
 
 ---
 
@@ -89,7 +89,7 @@
 # ⚡ Rangkuman
 
 - Frontend (Svelte) menangani antarmuka pengguna dan interaksi. Menggunakan Fetch API untuk berkomunikasi dengan backend.
-- Backend (Leaf) mengelola logika bisnis dan menyediakan endpoint API untuk operasi CRUD, autentikasi, dan validasi.
+- Backend (Leaf) mengelola logika dan menyediakan endpoint API untuk pengoperasian aplikasi.
 - Database (MariaDB) menyimpan semua data aplikasi termasuk pengguna, produk, pesanan, ulasan, dan riwayat jual beli.
 - Keamanan dijamin dengan penggunaan JWT untuk autentikasi dan BCrypt untuk hashing password.
 - Dependency Management dilakukan dengan Composer untuk mengelola libraries PHP yang digunakan.
