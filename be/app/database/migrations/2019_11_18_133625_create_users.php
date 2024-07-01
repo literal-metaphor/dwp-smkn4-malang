@@ -12,18 +12,20 @@ class CreateUsers extends Database
      */
     public function up()
     {
-        // if (!static::$capsule::schema()->hasTable("users")):
-        // 	static::$capsule::schema()->create("users", function (Blueprint $table) {
-        //         $table->increments('id');
-        // 		$table->string('username');
-        // 		$table->string('fullname');
-        // 		$table->string('email')->unique();
-        // 		$table->timestamp('email_verified_at')->nullable();
-        // 		$table->string('password');
-        // 		$table->rememberToken();
-        // 		$table->timestamps();
-        // 	});
-        // endif;
+        if (!static::$capsule::schema()->hasTable("users")):
+        	static::$capsule::schema()->create("users", function (Blueprint $table) {
+                $table->uuid('id')->primary();
+        		$table->string('username')->unique();
+        		$table->string('first_name');
+                $table->string('last_name')->nullable();
+        		$table->string('email')->unique();
+        		$table->string('password');
+                $table->string('cell_phone_number', 20);
+                $table->boolean('banned')->default(false);
+        		$table->rememberToken();
+        		$table->timestamps();
+        	});
+        endif;
 
         /**
          * Leaf Schema allows you to build migrations
@@ -34,7 +36,7 @@ class CreateUsers extends Database
          * Docs @ https://leafphp.dev/docs/mvc/schema.html
          */
         // you can now build your migrations with schemas
-        Schema::build('users');
+        // Schema::build('users');
     }
 
     /**

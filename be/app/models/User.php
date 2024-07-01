@@ -4,33 +4,19 @@ namespace App\Models;
 
 class User extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     * @var array
-     */
-    protected $fillable = [
-        'fullname', 'email', 'password',
-    ];
+    public function admin() {
+        $this->hasOne(Admin::class);
+    }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    public function transactions() {
+        $this->hasMany(Transaction::class);
+    }
 
-    /**
-     * Indicates if the model should be timestamped.
-     * @var bool
-     */
-    public $timestamps = true;
+    public function wishlists() {
+        $this->hasMany(Wishlist::class);
+    }
 
-    /**
-     * The attributes that should be cast to native types.
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function reviews() {
+        $this->hasMany(Review::class);
+    }
 }
