@@ -4,9 +4,11 @@ namespace App\Models;
 
 class User extends Model
 {
-    public function admin() {
-        $this->hasOne(Admin::class);
-    }
+    protected $hidden = [
+        'password',
+        'banned',
+        'is_admin',
+    ];
 
     public function transactions() {
         $this->hasMany(Transaction::class);
