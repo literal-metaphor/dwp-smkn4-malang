@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'id' => Str::uuid(),
             'username' => 'admin',
             'email' => 'admin@example.com',
-            'password' => 'superadmin', // !change this into client's request during production
+            'password' => bcrypt('superadmin'), // !change this into client's request during production
             'first_name' => 'Super',
             'last_name' => 'Admin',
             'cell_phone_number' => '1234567890',

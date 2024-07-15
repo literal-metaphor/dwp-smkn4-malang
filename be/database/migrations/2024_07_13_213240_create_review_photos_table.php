@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('photo_id');
             $table->timestamps();
             $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('photo_id')->references('id')->on('files')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('photo_id')->references('id')->on('files')->onDelete('set null')->onUpdate('set null');
         });
     }
 

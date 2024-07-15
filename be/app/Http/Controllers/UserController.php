@@ -29,7 +29,8 @@ class UserController extends Controller
      * Assert that user is an admin
      */
     private function assertAdmin(Request $req) {
-        return auth()->user()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
+        // return auth()->user()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
+        return User::where('remember_token', $req->bearerToken())->first()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
     }
 
     /**
@@ -119,41 +120,38 @@ class UserController extends Controller
         }
     }
 
+    // *IMPORTANT NOTE* Admin must not be exposed to the public on read methods
     /**
      * Index users by limit
      */
-    public function index(Request $req) {
-        $data = $this->validateRequest($req, [
-            'limit' => 'integer|min:1|max:100',
-        ]);
-        $users = User::paginate($data['limit']);
-        return response()->json($users);
+    public function index() {
+        return response()->json(User::orderBy('created_at', 'desc')->limit(10)->get()->filter(function ($user) { return !in_array(true, [$user->is_admin]); }));
     }
 
     /**
      * Show a user by ID
      */
     public function show(string $id) {
-        return response()->json(User::findOrFail($id));
+        return response()->json(!User::findOrFail($id)->is_admin ? User::findOrFail($id) : []);
     }
 
     /**
      * Create a new user
      * @deprecated use register instead
      */
-    public function store(Request $req) {
-        $data = $this->validateUserData($req);
+    // public function store(Request $req) {
+    //     $data = $this->validateUserData($req);
 
-        $data['password'] = Hash::make($data['password']);
-        $data['id'] = Str::uuid();
+    //     $data['password'] = Hash::make($data['password']);
+    //     $data['id'] = Str::uuid();
 
-        // Create the user and handle any errors
-        try {
-            return response()->json(User::create($data));
-        } catch (\Throwable $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
-        }
-    }
+    //     // Create the user and handle any errors
+    //     try {
+    //         return response()->json(User::create($data));
+    //     } catch (\Throwable $e) {
+    //         return response()->json(['message' => $e->getMessage()], 500);
+    //     }
+    // }
 
     /**
      * Update a user
@@ -165,7 +163,7 @@ class UserController extends Controller
             // Update the user and handle any errors
             try {
                 $user = User::findOrFail($id)->update($data);
-                return response()->json($user);
+                return response()->json(User::findOrFail($id));
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }
@@ -239,6 +237,7 @@ class UserController extends Controller
                     // Upload the new file
                     $filename = $this->uploadFile($req);
                     $file = File::create([
+                        'id' => Str::uuid(),
                         'filename' => $filename,
                         'alt' => "User avatar",
                     ]);
@@ -252,8 +251,6 @@ class UserController extends Controller
                     return response()->json(['message' => $e->getMessage()], 500);
                 }
             }
-        } else {
-            return response()->json(['message' => 'User is not verified'], 401);
         }
     }
 

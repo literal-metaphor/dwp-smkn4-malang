@@ -17,12 +17,12 @@ Route::prefix('v1')->group(function () {
         Route::delete('/{id}', [UserController::class, 'logout']);
 
         Route::prefix('/admin')->group(function () {
-            Route::get('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
-            Route::get('/{id}/toggle-admin', [UserController::class, 'toggleAdmin']);
+            Route::put('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
+            Route::put('/{id}/toggle-admin', [UserController::class, 'toggleAdmin']);
         });
     });
 
-    Route::prefix('/users')->group(function () {
+    Route::prefix('/user')->group(function () {
         // Read methods should be available to all users, not just admins
         Route::get('/', [UserController::class, 'index']);
         Route::get('/{id}', [UserController::class, 'show']);
@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::get('/{id}/avatar', [UserController::class, 'getAvatar']);
         Route::post('/{id}/avatar', [UserController::class, 'storeAvatar']);
-        // Route::put('/{id}/avatar', [UserController::class, 'updateAvatar']); // !combined with store method
+        // Route::put('/{id}/avatar', [UserController::class, 'updateAvatar']); // !combined with store method, also Laravel doesn't support form data in PUT requests, which mean sending file data is not possible at the moment
         Route::delete('/{id}/avatar', [UserController::class, 'destroyAvatar']);
     });
 });

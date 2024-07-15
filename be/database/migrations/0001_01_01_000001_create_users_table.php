@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('is_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();
-            $table->foreign('avatar_id')->references('id')->on('files')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('avatar_id')->references('id')->on('files')->onDelete('set null')->onUpdate('set null');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
