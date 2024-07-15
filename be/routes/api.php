@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -35,5 +37,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/{id}/avatar', [UserController::class, 'storeAvatar']);
         // Route::put('/{id}/avatar', [UserController::class, 'updateAvatar']); // !combined with store method, also Laravel doesn't support form data in PUT requests, which mean sending file data is not possible at the moment
         Route::delete('/{id}/avatar', [UserController::class, 'destroyAvatar']);
+    });
+
+    Route::prefix('/shop')->group(function () {
+        Route::get('/', [ShopController::class, 'index']);
+        Route::get('/{id}', [ShopController::class, 'show']);
+        Route::middleware([AdminOnly::class])->group(function () {
+            Route::post('/', [ShopController::class, 'store']);
+            Route::put('/{id}', [ShopController::class, 'update']);
+            Route::delete('/{id}', [ShopController::class, 'destroy']);
+        });
     });
 });
