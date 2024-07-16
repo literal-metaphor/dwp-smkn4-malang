@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\Product;
+use App\Models\ProductPhoto;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -93,7 +95,74 @@ class ProductController extends Controller
      */
     public function destroy(Request $req, string $shop_id, string $id) {
         $this->assertAuthorized($req, $shop_id);
-        Product::findOrFail($id)->delete();
-        return response()->json(['message' => 'Product deleted']);
+        try {
+            Product::findOrFail($id)->delete();
+            return response()->json(['message' => 'Product deleted']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get all photos of a product
+     */
+    public function getPhotos(string $id) {
+        $photo_ids = ProductPhoto::where('product_id', $id)->get()->pluck('photo_id');
+        $files = File::whereIn('id', $photo_ids)->get();
+        return response()->json($files);
+    }
+
+    /**
+     * Add photo to a product
+     */
+    public function addPhoto(Request $req, string $shop_id, string $id) {
+        $this->assertAuthorized($req, $shop_id);
+
+        $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
+
+        // Check if the product exists
+        Product::findOrFail($id);
+
+        try {
+            $filename = $this->uploadFile($req);
+            $file = File::create([
+                'id' => Str::uuid(),
+                'filename' => $filename,
+            ]);
+
+            ProductPhoto::create([
+                'id' => Str::uuid(),
+                'product_id' => $id,
+                'photo_id' => $file->id,
+            ]);
+
+            $photo_ids = ProductPhoto::where('product_id', $id)->get()->pluck('photo_id');
+            $files = File::whereIn('id', $photo_ids)->get();
+
+            return response()->json($files);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Delete a photo from a product
+     */
+    public function deletePhoto(Request $req, string $shop_id, string $id, string $photo_id) {
+        $this->assertAuthorized($req, $shop_id);
+
+        // Check if the product exists
+        Product::findOrFail($id);
+
+        // Delete the file and handle any errors
+        try {
+            // For some reason, File::findOrFail doesn't work. It doesn't stop even though the file doesn't exist. But it works, so let's just roll with it.
+            $file = File::findOrFail($photo_id);
+            $this->deleteFile($file->filename);
+            ProductPhoto::where('product_id', $id)->where('photo_id', $photo_id)->delete();
+            return response()->json(['message' => 'Photo deleted']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }

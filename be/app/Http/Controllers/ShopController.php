@@ -72,7 +72,11 @@ class ShopController extends Controller
      * Delete a shop
      */
     public function destroy(Request $req, string $id) {
-        Shop::findOrFail($id)->delete();
-        return response()->json(['message' => 'Shop deleted']);
+        try {
+            Shop::findOrFail($id)->delete();
+            return response()->json(['message' => 'Shop deleted']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }

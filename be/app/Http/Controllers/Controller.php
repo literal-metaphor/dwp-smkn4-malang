@@ -35,19 +35,19 @@ abstract class Controller
     /**
      * Delete a file from storage.
      *
-     * @param string $file The name of the file to delete.
+     * @param string $filename The name of the file to delete.
      * @param string $disk The disk in which the file is stored. Defaults to 'public'.
      *
      * @return bool Whether the file was successfully deleted.
      */
-    protected function deleteFile(string $file, string $disk = 'public'): bool
+    protected function deleteFile(string $filename, string $disk = 'public'): bool
     {
         // Check if the file exists
-        $path = Storage::disk($disk)->path("uploads/$file");
+        $path = Storage::disk($disk)->path("uploads/$filename");
 
         // Delete the file if it exists
         if (file_exists($path)) {
-            return Storage::disk($disk)->delete("uploads/$file");
+            return Storage::disk($disk)->delete("uploads/$filename");
         }
 
         // If the file does not exist, return false

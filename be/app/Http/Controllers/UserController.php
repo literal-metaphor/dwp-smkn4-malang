@@ -176,8 +176,12 @@ class UserController extends Controller
      */
     public function destroy(Request $req, string $id) {
         if ($this->verifyMethod($req, $id)) {
-            User::where('id', $id)->firstOrFail()->delete();
-            return response()->json(['message' => 'User deleted']);
+            try {
+                User::where('id', $id)->firstOrFail()->delete();
+                return response()->json(['message' => 'User deleted']);
+            } catch (\Throwable $e) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
         }
     }
 
@@ -224,6 +228,8 @@ class UserController extends Controller
     public function storeAvatar(Request $req, string $id) {
         if ($this->verifyMethod($req, $id)) {
             if ($req->hasFile('file')) {
+                $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
+
                 // Store the file and handle any errors
                 try {
                     $user = User::findOrFail($id);
@@ -240,14 +246,13 @@ class UserController extends Controller
                     $file = File::create([
                         'id' => Str::uuid(),
                         'filename' => $filename,
-                        'alt' => "User avatar",
                     ]);
 
                     // Update the user
                     $user->avatar_id = $file->id;
                     $user->save();
 
-                    return response()->json($user);
+                    return response()->json($file);
                 } catch (\Throwable $e) {
                     return response()->json(['message' => $e->getMessage()], 500);
                 }
