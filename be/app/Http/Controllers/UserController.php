@@ -28,6 +28,7 @@ class UserController extends Controller
     /**
      * Assert that user is an admin
      */
+    // ? Didn't we have this in middleware already?
     private function assertAdmin(Request $req) {
         // return auth()->user()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
         return User::where('remember_token', $req->bearerToken())->first()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
@@ -122,10 +123,10 @@ class UserController extends Controller
 
     // *IMPORTANT NOTE* Admin must not be exposed to the public on read methods
     /**
-     * Index users by limit
+     * Index all users
      */
     public function index() {
-        return response()->json(User::orderBy('created_at', 'desc')->limit(10)->get()->filter(function ($user) { return !in_array(true, [$user->is_admin]); }));
+        return response()->json(User::orderBy('created_at', 'desc')->get()->filter(function ($user) { return !in_array(true, [$user->is_admin]); }));
     }
 
     /**

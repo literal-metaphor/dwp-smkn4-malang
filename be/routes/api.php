@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    // * User Routes
     Route::prefix('/user')->group(function () {
         // Read methods should be available to all users, not just admins
         Route::get('/', [UserController::class, 'index']);
@@ -39,6 +41,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/{id}/avatar', [UserController::class, 'destroyAvatar']);
     });
 
+    // * Shop Routes
     Route::prefix('/shop')->group(function () {
         Route::get('/', [ShopController::class, 'index']);
         Route::get('/{id}', [ShopController::class, 'show']);
@@ -47,5 +50,14 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [ShopController::class, 'update']);
             Route::delete('/{id}', [ShopController::class, 'destroy']);
         });
+    });
+
+    // * Product Routes
+    Route::prefix('/product')->group(function () {
+        Route::get('/', [ProductController::class, 'index']);
+        Route::get('/{id}', [ProductController::class, 'show']);
+        Route::post('/', [ProductController::class, 'store']);
+        Route::put('/{id}', [ProductController::class, 'update']);
+        Route::delete('/{shop_id}/{id}', [ProductController::class, 'destroy']);
     });
 });

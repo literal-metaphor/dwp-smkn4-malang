@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shop;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,10 +20,10 @@ class ShopController extends Controller
     }
 
     /**
-     * Get a list of shops by limit
+     * Index all shops
      */
     public function index() {
-        return response()->json(Shop::orderBy('created_at', 'desc')->limit(10)->get());
+        return response()->json(Shop::orderBy('created_at', 'desc')->get());
     }
 
     /**
@@ -71,7 +72,7 @@ class ShopController extends Controller
      * Delete a shop
      */
     public function destroy(Request $req, string $id) {
-        Shop::where('id', $id)->firstOrFail()->delete();
+        Shop::findOrFail($id)->delete();
         return response()->json(['message' => 'Shop deleted']);
     }
 }
