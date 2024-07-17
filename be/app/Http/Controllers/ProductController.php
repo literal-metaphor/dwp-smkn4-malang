@@ -35,7 +35,8 @@ class ProductController extends Controller
             $user = User::where('remember_token', $req->bearerToken())->first();
             $shop = Shop::findOrFail($shop_id);
             if ($shop->owner_id !== $user->id) {
-                return response()->json(['message' => 'User is not the shopkeeper of this shop'], 401);
+                // return response()->json(['message' => 'User is not authorized'], 401);
+                throw new \Exception('User is not authorized');
             }
         }
     }
@@ -58,14 +59,13 @@ class ProductController extends Controller
      * Create a new product
      */
     public function store(Request $req) {
-        $data = $this->validateProductData($req);
-
-        // Check if the user is the shopkeeper of the shop
-        $this->assertAuthorized($req, $data['shop_id']);
-
-        // Create the product and handle any errors
         try {
+            $data = $this->validateProductData($req);
+
+            $this->assertAuthorized($req, $data['shop_id']);
+
             $data['id'] = Str::uuid();
+
             return response()->json(Product::create($data));
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -76,14 +76,13 @@ class ProductController extends Controller
      * Update a product
      */
     public function update(Request $req, string $id) {
-        $data = $this->validateProductData($req);
-
-        // Check if the user is the shopkeeper of the shop
-        $this->assertAuthorized($req, $data['shop_id']);
-
-        // Update the product and handle any errors
         try {
+            $data = $this->validateProductData($req);
+
+            $this->assertAuthorized($req, $data['shop_id']);
+
             Product::findOrFail($id)->update($data);
+
             return response()->json(Product::findOrFail($id));
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -94,8 +93,8 @@ class ProductController extends Controller
      * Delete a product
      */
     public function destroy(Request $req, string $shop_id, string $id) {
-        $this->assertAuthorized($req, $shop_id);
         try {
+            $this->assertAuthorized($req, $shop_id);
             Product::findOrFail($id)->delete();
             return response()->json(['message' => 'Product deleted']);
         } catch (\Throwable $e) {
@@ -116,14 +115,14 @@ class ProductController extends Controller
      * Add photo to a product
      */
     public function addPhoto(Request $req, string $shop_id, string $id) {
-        $this->assertAuthorized($req, $shop_id);
-
-        $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
-
-        // Check if the product exists
-        Product::findOrFail($id);
-
         try {
+            $this->assertAuthorized($req, $shop_id);
+
+            $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
+
+            // Check if the product exists
+            Product::findOrFail($id);
+
             $filename = $this->uploadFile($req);
             $file = File::create([
                 'id' => Str::uuid(),
@@ -149,17 +148,18 @@ class ProductController extends Controller
      * Delete a photo from a product
      */
     public function deletePhoto(Request $req, string $shop_id, string $id, string $photo_id) {
-        $this->assertAuthorized($req, $shop_id);
-
-        // Check if the product exists
-        Product::findOrFail($id);
-
-        // Delete the file and handle any errors
         try {
-            // For some reason, File::findOrFail doesn't work. It doesn't stop even though the file doesn't exist. But it works, so let's just roll with it.
-            $file = File::findOrFail($photo_id);
+            $this->assertAuthorized($req, $shop_id);
+
+            // Check if the product exists
+            Product::findOrFail($id);
+
+            $file = File::findOrFail($photo_id); // For some reason, File::findOrFail doesn't work. It doesn't stop even though the file doesn't exist. But it works, so let's just roll with it.
+
             $this->deleteFile($file->filename);
+
             ProductPhoto::where('product_id', $id)->where('photo_id', $photo_id)->delete();
+
             return response()->json(['message' => 'Photo deleted']);
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);

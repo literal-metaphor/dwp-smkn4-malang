@@ -3,6 +3,7 @@
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +65,18 @@ Route::prefix('v1')->group(function () {
             Route::get('/{id}', [ProductController::class, 'getPhotos']);
             Route::post('/{shop_id}/{id}', [ProductController::class, 'addPhoto']);
             Route::delete('/{shop_id}/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
+        });
+    });
+
+    // * Transaction Routes
+    Route::prefix('/transaction')->group(function () {
+        Route::get('/{id}', [TransactionController::class, 'show']);
+        Route::post('/', [TransactionController::class, 'store']);
+
+        Route::middleware([AdminOnly::class])->group(function () {
+            Route::get('/', [TransactionController::class, 'index']);
+            // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
+            Route::delete('/{id}', [TransactionController::class, 'destroy']);
         });
     });
 });
