@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('product_id');
             $table->uuid('user_id');
-            $table->enum('star', [1, 2, 3, 4, 5]);
+            $table->integer('rating')->min(1)->max(5);
             $table->text('comment')->nullable();
             $table->timestamps();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');

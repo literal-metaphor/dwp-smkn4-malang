@@ -31,7 +31,22 @@ class UserController extends Controller
     // ? Didn't we have this in middleware already?
     private function assertAdmin(Request $req) {
         // return auth()->user()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
-        return User::where('remember_token', $req->bearerToken())->first()->is_admin ? true : response()->json(['message' => 'User is not an admin'], 401);
+        if (!User::where('remember_token', $req->bearerToken())->first()->is_admin) {
+            throw new \Exception('User is not an admin');
+        }
+    }
+
+    /**
+     * Verify the user's token and ban status
+     */
+    private function assertAuthorized(Request $req, string $id) {
+        $user = User::findOrFail($id);
+        if ($user->banned) {
+            throw new \Exception('User is banned');
+        }
+        if ($user->remember_token !== $req->bearerToken()) {
+            throw new \Exception('Invalid token');
+        }
     }
 
     /**
@@ -58,25 +73,14 @@ class UserController extends Controller
     }
 
     /**
-     * Verify the user's token and ban status
-     */
-    private function verifyMethod(Request $req, string $id) {
-        $user = User::findOrFail($id);
-        if ($user->banned) {
-            return response()->json(['message' => 'User is banned'], 403);
-        }
-        if ($user->remember_token !== $req->bearerToken()) {
-            return response()->json(['message' => 'Invalid token'], 401);
-        }
-        return true;
-    }
-
-    /**
      * Public method for verify
      */
     public function verify(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
+        try {
+            $this->assertAuthorized($req, $id);
             return response()->json(User::findOrFail($id));
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -113,11 +117,14 @@ class UserController extends Controller
      * Log out the user by deleting their token
      */
     public function logout(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
+        try {
+            $this->assertAuthorized($req, $id);
             $user = User::findOrFail($id);
             $user->remember_token = null;
             $user->save();
             return response()->json($user);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -158,7 +165,8 @@ class UserController extends Controller
      * Update a user
      */
     public function update(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
+        try {
+            $this->assertAuthorized($req, $id);
             $data = $this->validateUserData($req);
 
             // Update the user and handle any errors
@@ -168,6 +176,8 @@ class UserController extends Controller
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -175,13 +185,12 @@ class UserController extends Controller
      * Delete a user
      */
     public function destroy(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
-            try {
-                User::where('id', $id)->firstOrFail()->delete();
-                return response()->json(['message' => 'User deleted']);
-            } catch (\Throwable $e) {
-                return response()->json(['message' => $e->getMessage()], 500);
-            }
+        try {
+            $this->assertAuthorized($req, $id);
+            User::where('id', $id)->findOrFail()->delete();
+            return response()->json(['message' => 'User deleted']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -189,13 +198,14 @@ class UserController extends Controller
      * Toggle a user's ban status
      */
     public function toggleBan(Request $req, string $id) {
-        if ($this->assertAdmin($req)) {
-            $user = User::where('id', $id)->firstOrFail();
+        try {
+            $this->assertAdmin($req);
+            $user = User::where('id', $id)->findOrFail();
             $user->banned = !$user->banned;
             $user->save();
             return response()->json(['message' => "$user->username is now ".($user->banned ? 'banned' : 'unbanned') . "."]);
-        } else {
-            return response()->json(['message' => 'User is not verified'], 401);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -203,13 +213,14 @@ class UserController extends Controller
      * Toggle admin status
      */
     public function toggleAdmin(Request $req, string $id) {
-        if ($this->assertAdmin($req)) {
-            $user = User::where('id', $id)->firstOrFail();
+        try {
+            $this->assertAdmin($req);
+            $user = User::where('id', $id)->findOrFail();
             $user->is_admin = !$user->is_admin;
             $user->save();
             return response()->json(['message' => "$user->username is now ".($user->is_admin ? 'promoted to admin' : 'demoted from admin') . "."]);
-        } else {
-            return response()->json(['message' => 'User is not verified'], 401);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -226,37 +237,37 @@ class UserController extends Controller
      * Store the user's avatar or update it if it already exists
      */
     public function storeAvatar(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
+        try {
+            $this->assertAuthorized($req, $id);
             if ($req->hasFile('file')) {
-                $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
+                $req->validate(['file' => 'required|max:10240|mimes:jpeg,png,jpg,svg']);
 
-                // Store the file and handle any errors
-                try {
-                    $user = User::findOrFail($id);
+                $user = User::findOrFail($id);
 
-                    // Delete the old file if it exists
-                    if ($user->avatar_id) {
-                        $oldFile = File::findOrFail($user->avatar_id);
-                        $this->deleteFile($oldFile->filename);
-                        $oldFile->delete();
-                    }
-
-                    // Upload the new file
-                    $filename = $this->uploadFile($req);
-                    $file = File::create([
-                        'id' => Str::uuid(),
-                        'filename' => $filename,
-                    ]);
-
-                    // Update the user
-                    $user->avatar_id = $file->id;
-                    $user->save();
-
-                    return response()->json($file);
-                } catch (\Throwable $e) {
-                    return response()->json(['message' => $e->getMessage()], 500);
+                // Delete the old file if it exists
+                if ($user->avatar_id) {
+                    $oldFile = File::findOrFail($user->avatar_id);
+                    $this->deleteFile($oldFile->filename);
+                    $oldFile->delete();
                 }
+
+                // Upload the new file
+                $filename = $this->uploadFile($req);
+                $file = File::create([
+                    'id' => Str::uuid(),
+                    'filename' => $filename,
+                ]);
+
+                // Update the user
+                $user->avatar_id = $file->id;
+                $user->save();
+
+                return response()->json($file);
+            } else {
+                throw new \Exception('No file uploaded');
             }
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -264,7 +275,9 @@ class UserController extends Controller
      * Delete the user's avatar
      */
     public function destroyAvatar(Request $req, string $id) {
-        if ($this->verifyMethod($req, $id)) {
+        try {
+            $this->assertAuthorized($req, $id);
+
             // Delete the file and handle any errors
             try {
                 $user = User::findOrFail($id);
@@ -280,6 +293,8 @@ class UserController extends Controller
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

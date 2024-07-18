@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductPhoto;
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -118,7 +119,7 @@ class ProductController extends Controller
         try {
             $this->assertAuthorized($req, $shop_id);
 
-            $req->validate(['file' => 'required|mimes:jpeg,png,jpg,svg']);
+            $req->validate(['file' => 'required|max:10240|mimes:jpeg,png,jpg,svg']);
 
             // Check if the product exists
             Product::findOrFail($id);
@@ -161,6 +162,27 @@ class ProductController extends Controller
             ProductPhoto::where('product_id', $id)->where('photo_id', $photo_id)->delete();
 
             return response()->json(['message' => 'Photo deleted']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Toggle wishlist of a product by a user
+     */
+    public function toggleWishlist(Request $req, string $user_id, string $id) {
+        try {
+            if (Wishlist::where('user_id', $user_id)->where('product_id', $id)->exists()) {
+                Wishlist::where('user_id', $user_id)->where('product_id', $id)->delete();
+                return response()->json(['message' => 'Wishlist removed']);
+            } else {
+                Wishlist::create([
+                    'id' => Str::uuid(),
+                    'product_id' => $id,
+                    'user_id' => $user_id,
+                ]);
+                return response()->json(['message' => 'Wishlist added']);
+            }
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

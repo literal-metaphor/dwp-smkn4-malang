@@ -3,6 +3,7 @@
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
@@ -36,10 +37,10 @@ Route::prefix('v1')->group(function () {
         // Route::post('/', [UserController::class, 'store']); // !deprecated
         Route::put('/{id}', [UserController::class, 'update']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
-        Route::get('/{id}/avatar', [UserController::class, 'getAvatar']);
-        Route::post('/{id}/avatar', [UserController::class, 'storeAvatar']);
-        // Route::put('/{id}/avatar', [UserController::class, 'updateAvatar']); // !combined with store method, also Laravel doesn't support form data in PUT requests, which mean sending file data is not possible at the moment
-        Route::delete('/{id}/avatar', [UserController::class, 'destroyAvatar']);
+        Route::get('/avatar/{id}', [UserController::class, 'getAvatar']);
+        Route::post('/avatar/{id}', [UserController::class, 'storeAvatar']);
+        // Route::put('/avatar/{id}', [UserController::class, 'updateAvatar']); // !combined with store method, also Laravel doesn't support form data in PUT requests, which mean sending file data is not possible at the moment
+        Route::delete('/avatar/{id}', [UserController::class, 'destroyAvatar']);
     });
 
     // * Shop Routes
@@ -66,6 +67,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/{shop_id}/{id}', [ProductController::class, 'addPhoto']);
             Route::delete('/{shop_id}/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
         });
+
+        Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
+
+        Route::post('/review/{id}', [ReviewController::class, 'store']); // Product ID
+        Route::post('/review/{id}/photo', [ReviewController::class, 'addPhoto']);
+        Route::get('/review/{id}', [ReviewController::class, 'index']);
+        Route::put('/review/{id}', [ReviewController::class, 'update']); // Review ID
+        Route::delete('/review/{id}', [ReviewController::class, 'destroy']);
     });
 
     // * Transaction Routes
@@ -75,7 +84,7 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware([AdminOnly::class])->group(function () {
             Route::get('/', [TransactionController::class, 'index']);
-            // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
+            // Route::put('/{id}', [TransactionController::class, 'update']); // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
             Route::delete('/{id}', [TransactionController::class, 'destroy']);
         });
     });
