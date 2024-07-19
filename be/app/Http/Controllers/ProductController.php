@@ -108,6 +108,10 @@ class ProductController extends Controller
      */
     public function getPhotos(string $id) {
         $photo_ids = ProductPhoto::where('product_id', $id)->get()->pluck('photo_id');
+
+        // Remove all null values form $photo_ids
+        $photo_ids = array_filter($photo_ids, function ($value) { return $value !== null; });
+
         $files = File::whereIn('id', $photo_ids)->get();
         return response()->json($files);
     }
