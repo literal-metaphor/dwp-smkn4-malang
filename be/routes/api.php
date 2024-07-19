@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\AdminOnly;
@@ -69,12 +71,6 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
-
-        Route::post('/review/{id}', [ReviewController::class, 'store']); // Product ID
-        Route::post('/review/{id}/photo', [ReviewController::class, 'addPhoto']);
-        Route::get('/review/{id}', [ReviewController::class, 'index']);
-        Route::put('/review/{id}', [ReviewController::class, 'update']); // Review ID
-        Route::delete('/review/{id}', [ReviewController::class, 'destroy']);
     });
 
     // * Transaction Routes
@@ -87,5 +83,25 @@ Route::prefix('v1')->group(function () {
             // Route::put('/{id}', [TransactionController::class, 'update']); // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
             Route::delete('/{id}', [TransactionController::class, 'destroy']);
         });
+    });
+
+    // * Rating Routes
+    Route::prefix('/rating')->group(function () {
+        Route::get('/', [RatingController::class, 'index']);
+        Route::get('/product/{product_id}', [RatingController::class, 'indexByProduct']);
+        Route::get('/{id}', [RatingController::class, 'show']);
+        Route::post('/', [RatingController::class, 'store']);
+        // Route::put('/{id}', [RatingController::class, 'update']); // Combined with store
+        Route::delete('/{id}', [RatingController::class, 'destroy']);
+    });
+
+    // * Comment Routes
+    Route::prefix('/comment')->group(function () {
+        Route::get('/', [CommentController::class, 'index']);
+        Route::get('/product/{product_id}', [CommentController::class, 'indexByProduct']);
+        Route::get('/{id}', [CommentController::class, 'show']);
+        Route::post('/', [CommentController::class, 'store']);
+        Route::put('/{id}', [CommentController::class, 'update']);
+        Route::delete('/{id}', [CommentController::class, 'destroy']);
     });
 });

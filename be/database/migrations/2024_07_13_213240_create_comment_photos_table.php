@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('review_photos', function (Blueprint $table) {
+        Schema::create('comment_photos', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('review_id');
+            $table->uuid('comment_id');
             $table->uuid('photo_id');
             $table->timestamps();
-            $table->foreign('review_id')->references('id')->on('reviews')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('photo_id')->references('id')->on('files')->onDelete('set null')->onUpdate('set null');
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('review_photos');
+        Schema::dropIfExists('comment_photos');
     }
 };

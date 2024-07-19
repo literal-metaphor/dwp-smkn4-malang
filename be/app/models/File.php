@@ -5,7 +5,7 @@ namespace App\Models;
 class File extends Model
 {
     public function review_photo() {
-        $this->hasMany(ReviewPhoto::class);
+        $this->hasMany(CommentPhoto::class);
     }
 
     public function product_photo() {

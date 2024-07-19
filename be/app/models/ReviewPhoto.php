@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-class ReviewPhoto extends Model
+class CommentPhoto extends Model
 {
-    public function review() {
-        $this->belongsTo(Review::class);
+    public function comment() {
+        $this->belongsTo(Comment::class);
     }
 
     public function file() {

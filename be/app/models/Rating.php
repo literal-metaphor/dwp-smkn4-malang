@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Review extends Model
+class Rating extends Model
 {
     public function user() {
         $this->belongsTo(User::class);
