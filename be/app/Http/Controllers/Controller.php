@@ -11,15 +11,16 @@ abstract class Controller
      * Handle the file upload.
      *
      * @param \Illuminate\Http\Request $req The request object.
+     * @param string $maxSize The maximum size of the uploaded file. Defaults to null.
      * @param string $inputName The name of the input field in the request. Defaults to 'file'.
      * @param string $disk The disk in which the file will be stored. Defaults to 'public'.
      *
      * @return string The public basename of the uploaded file.
      */
-    protected function uploadFile(Request $req, string $inputName = 'file', string $disk = 'public'): string
+    protected function uploadFile(Request $req, string $maxSize = null, string $inputName = 'file', string $disk = 'public'): string
     {
         $req->validate([
-            $inputName => 'required|file|mimes:jpg,jpeg,png,svg',
+            $inputName => 'required|file'.($maxSize ? "|max:$maxSize" : ''),
         ]);
 
         // Retrieve the file from the request
