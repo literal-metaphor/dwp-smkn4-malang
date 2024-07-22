@@ -2,35 +2,29 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
 class User extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     * @var array
-     */
-    protected $fillable = [
-        'fullname', 'email', 'password',
-    ];
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that should be hidden for serialization.
-     * @var array
-     */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'banned',
+        'is_admin',
     ];
 
-    /**
-     * Indicates if the model should be timestamped.
-     * @var bool
-     */
-    public $timestamps = true;
+    public function transactions() {
+        $this->hasMany(Transaction::class);
+    }
 
-    /**
-     * The attributes that should be cast to native types.
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function wishlists() {
+        $this->hasMany(Wishlist::class);
+    }
+
+    public function reviews() {
+        $this->hasMany(Review::class);
+    }
 }
