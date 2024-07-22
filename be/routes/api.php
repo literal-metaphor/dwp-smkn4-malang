@@ -103,5 +103,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [CommentController::class, 'store']);
         Route::put('/{id}', [CommentController::class, 'update']);
         Route::delete('/{id}', [CommentController::class, 'destroy']);
+
+        Route::prefix('/photo')->group(function () {
+            Route::get('/{id}', [CommentController::class, 'getPhotos']);
+            Route::post('/{id}', [CommentController::class, 'addPhoto']);
+            Route::delete('/{comment_id}/{photo_id}', [CommentController::class, 'deletePhoto']);
+        });
     });
 });
