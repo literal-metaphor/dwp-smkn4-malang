@@ -10,7 +10,7 @@
 	import CategoryButton from '$lib/components/category_button.svelte';
 	import ProductCard from '$lib/components/product_card.svelte';
 
-    export let data: PageData;
+    // export let data: PageData;
 </script>
 
 <div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
