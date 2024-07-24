@@ -20,8 +20,8 @@ class UserController extends Controller
             'password' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'last_name' => 'string|max:255|nullable',
-            'cell_phone_number' => 'required|string|max:15',
-            'country_code' => 'required|string|max:2',
+            // 'cell_phone_number' => 'required|string|max:15',
+            // 'country_code' => 'required|string|max:2',
         ]);
     }
 
