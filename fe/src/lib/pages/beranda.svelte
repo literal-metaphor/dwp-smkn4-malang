@@ -4,7 +4,7 @@
   // Images
   import bannerex from "$lib/assets/bannerex.svg";
   import ProductCard from '$lib/components/product_card.svelte';
-	import type { ProductData } from '$lib/types/ProductData';
+	import type ProductData from '$lib/types/ProductData';
   // import noimage from "$lib/assets/noimage.svg";
 
   import { ripple } from 'svelte-ripple-action';
@@ -18,7 +18,9 @@
     description: "T-Shirt",
     price: 10000.00,
     category: "male_fashion",
-    images: null
+    images: null,
+    created_at: new Date().toString(),
+    updated_at: new Date().toString(),
     // images: [noimage, noimage, noimage, noimage, noimage],
   }
 

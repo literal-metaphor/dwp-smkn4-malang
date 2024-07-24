@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProductData } from "$lib/types/ProductData";
+	import type ProductData from "$lib/types/ProductData";
   import { sessionPage } from "$lib/utils/page";
 
   import Carousel from "$lib/components/carousel.svelte";
