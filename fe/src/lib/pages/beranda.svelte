@@ -5,24 +5,24 @@
   import bannerex from "$lib/assets/bannerex.svg";
   import ProductCard from '$lib/components/product_card.svelte';
 	import type ProductData from '$lib/types/ProductData';
+	import { productData } from "$lib/types/Sample";
   // import noimage from "$lib/assets/noimage.svg";
 
   import { ripple } from 'svelte-ripple-action';
 
-  $: currentCategory = "Semua";
+  const productDatas: ProductData[] = [productData, productData, productData, productData, productData];
 
-  const productData: ProductData = {
-    id: "1",
-    shop_id: "1",
-    name: "T-Shirt",
-    description: "T-Shirt",
-    price: 10000.00,
-    category: "male_fashion",
-    images: null,
-    created_at: new Date().toString(),
-    updated_at: new Date().toString(),
-    // images: [noimage, noimage, noimage, noimage, noimage],
-  }
+  const categories: { value: string, label: string }[] = [
+    { value: "all", label: "Semua" },
+    { value: "food", label: "Makanan" },
+    { value: "drink", label: "Minuman" },
+    { value: "male_fashion", label: "Fashion Pria" },
+    { value: "female_fashion", label: "Fashion Wanita" },
+    { value: "child_fashion", label: "Fashion Anak" },
+    { value: "furniture", label: "Perabotan" }
+  ]
+
+  $: currentCategory = "Semua";
 
   // export let data: PageData;
 </script>
@@ -52,9 +52,9 @@
 
   <!-- Categories -->
   <div class={`flex items-center overflow-x-auto`}>
-    {#each ["Semua", "Baju Laki-Laki", "Baju Wanita", "Baju Anak", "Perabotan"] as category}
-      <button use:ripple on:click={() => currentCategory = category} type="button" class={`me-2 ${currentCategory === category ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
-        {category}
+    {#each categories as category}
+      <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+        {category.label}
       </button>
     {/each}
    </div>
@@ -78,11 +78,11 @@
 
   <!-- Products -->
   <div class={`flex items-center flex-wrap`}>
-      <ProductCard data={productData} />
-      <ProductCard data={productData} />
-      <ProductCard data={productData} />
-      <ProductCard data={productData} />
-      <ProductCard data={productData} />
+    {#each productDatas as productData}
+      {#if currentCategory === "all" || currentCategory === productData.category}
+        <ProductCard data={productData} />
+      {/if}
+    {/each}
   </div>
 
 </div>

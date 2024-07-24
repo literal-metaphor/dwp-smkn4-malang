@@ -10,7 +10,7 @@
   export let data: ProductData;
 </script>
 
-<div class={`p-4 border border-grey rounded-lg m-2`}>
+<div class={`w-[40vw] p-4 border border-grey rounded-lg m-2`}>
   {#if data.images && data.images.length > 0}
   <Carousel
     items={
@@ -20,13 +20,13 @@
     }
   />
   {:else}
-    <img src={noimage} alt="Product" class={`w-[30vw] h-auto rounded-lg`}>
+    <img src={noimage} alt="Product" class={`w-full h-auto rounded-lg`}>
   {/if}
 
   <br>
 
   <h3 class={`text-md font-medium`}>
-      {data.name}
+      {data.name.length > 20 ? data.name.slice(0, 20) + "..." : data.name}
   </h3>
   <p class={`text-sm font-medium`}>
       {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.price)}
