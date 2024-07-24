@@ -11,6 +11,9 @@
     import troli from "$lib/assets/troli.svg";
     import troliactive from "$lib/assets/troliactive.svg";
 
+    // Depedencies
+    import "svelte-ripple-action/ripple.css";
+
     const layoutedPages = ["beranda", "koleksi", "riwayat", "profile"];
 
     // export let data: LayoutData;
