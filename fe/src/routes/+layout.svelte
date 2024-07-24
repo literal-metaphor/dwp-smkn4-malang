@@ -13,6 +13,7 @@
 
     // Depedencies
     import "svelte-ripple-action/ripple.css";
+    import { ripple } from 'svelte-ripple-action';
 
     const layoutedPages = ["beranda", "koleksi", "riwayat", "profile"];
 
@@ -25,7 +26,7 @@
             <img src={logo} alt="Logo" class="me-4 size-12">
             <h1 class="text-md font-bold">DWP SMKN 4 Malang</h1>
         </div>
-        <button class={`rounded-full size-12 ms-8 p-3 mx-1 ${$sessionPage === "troli" ? `bg-french-violet text-white`: ``} flex justify-center items-center active:scale-90 transition duration-300`} on:click={() => sessionPage.set("troli")}>
+        <button use:ripple class={`rounded-full size-12 ms-8 p-3 mx-1 ${$sessionPage === "troli" ? `bg-french-violet text-white`: ``} flex justify-center items-center active:scale-90 transition duration-300`}} on:click={() => sessionPage.set("troli")}>
             {#if $sessionPage === "troli"}
                 <img src={troliactive} alt="Troli" class="size-12">
             {:else}

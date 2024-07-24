@@ -10,7 +10,7 @@
   export let data: ProductData;
 </script>
 
-<div class={`p-4 border border-grey rounded-lg mx-2`}>
+<div class={`p-4 border border-grey rounded-lg m-2`}>
   {#if data.images && data.images.length > 0}
   <Carousel
     items={
@@ -29,7 +29,7 @@
       {data.name}
   </h3>
   <p class={`text-sm font-medium`}>
-      {data.price}
+      {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.price)}
   </p>
 
   <br>
