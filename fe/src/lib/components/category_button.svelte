@@ -3,6 +3,6 @@
   export let label: string;
 </script>
 
-<button type="button" class={`me-2 ${current ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300`}>
+<button type="button" class={`me-2 ${current ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap active:scale-95`}>
   {label}
 </button>
