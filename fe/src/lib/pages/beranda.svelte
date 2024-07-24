@@ -1,15 +1,13 @@
 <script lang="ts">
   // import type { PageData } from './$types';
 
-  // Components
-  import FeaturedProduct from '$lib/components/featured_product.svelte';
-
   // Images
   import bannerex from "$lib/assets/bannerex.svg";
-  import noimage from "$lib/assets/noimage.svg";
-  import CategoryButton from '$lib/components/category_button.svelte';
   import ProductCard from '$lib/components/product_card.svelte';
 	import type { ProductData } from '$lib/types/ProductData';
+  // import noimage from "$lib/assets/noimage.svg";
+
+  import { ripple } from 'svelte-ripple-action';
 
   $: currentCategory = "Semua";
 
@@ -36,17 +34,27 @@
 
   <br>
 
-  <FeaturedProduct banner={bannerex} heading={`Koleksi Baju Modern`} />
+  <div class={`relative w-[90vw] h-[25vh] flex justify-center items-center`}>
+    <img src={bannerex} class={`absolute inset-0 w-[90vw] h-[25vh] object-cover rounded-lg`} alt=""/>
+    <div class={`relative text-center`}>
+        <h1 class={`text-lg text-white mb-4`}>
+          "Koleksi Baju Modern"
+        </h1>
+        <button use:ripple type="button" class={`text-black bg-white active:scale-90 rounded-full text-sm px-4 py-2 transition duration-300`}>
+            Lihat Selengkapnya →
+        </button>
+    </div>
+  </div>
 
   <br>
 
   <!-- Categories -->
   <div class={`flex items-center overflow-x-auto`}>
-      {#each ["Semua", "Baju Laki-Laki", "Baju Wanita", "Baju Anak", "Perabotan"] as category}
-        <button on:click={() => currentCategory = category} type="button">
-          <CategoryButton current={currentCategory === category} label={category} />
-        </button>
-      {/each}
+    {#each ["Semua", "Baju Laki-Laki", "Baju Wanita", "Baju Anak", "Perabotan"] as category}
+      <button use:ripple on:click={() => currentCategory = category} type="button" class={`me-2 ${currentCategory === category ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+        {category}
+      </button>
+    {/each}
    </div>
 
    <br>

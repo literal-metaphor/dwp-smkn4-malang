@@ -5,6 +5,8 @@
   import Carousel from "$lib/components/carousel.svelte";
   import noimage from "$lib/assets/noimage.svg";
 
+  import { ripple } from 'svelte-ripple-action';
+
   export let data: ProductData;
 </script>
 
@@ -33,7 +35,7 @@
   <br>
 
   <!-- () => { sessionPage.set(`produk?id${id}`) } --> <!-- Use this one later -->
-  <button on:click={() => sessionPage.set("produk")} type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 focus:scale-95 transition duration-300`}>
+  <button use:ripple type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 active:scale-90 transition duration-300`}>
       Lihat Produk
   </button>
 </div>
