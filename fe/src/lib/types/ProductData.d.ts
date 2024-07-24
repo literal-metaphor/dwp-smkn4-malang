@@ -5,5 +5,5 @@ export interface ProductData {
   description: string;
   price: number;
   category: string;
-  images: string[] | null;
+  images: string[]?;
 }
