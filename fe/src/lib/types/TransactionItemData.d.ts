@@ -4,7 +4,6 @@ export default interface TransactionItemData {
   id: string;
   product: Omit<ProductData, "shop">;
   quantity: number;
-  price: number;
   status: "pending" | "delivered";
   delivery_date: string | null;
   created_at: string;

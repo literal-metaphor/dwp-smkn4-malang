@@ -6,7 +6,7 @@ export default interface ProductData {
   name: string;
   description: string;
   price: number;
-  category: string;
+  category: "food" | "drink" | "female_fashion" | "male_fashion" | "child_fashion" | "furniture";
   images: string[]?;
   created_at: string;
   updated_at: string;
