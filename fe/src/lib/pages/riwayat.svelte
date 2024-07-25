@@ -13,6 +13,10 @@
 </script>
 
 <div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
+  <h2 class={`text-xl ms-2 font-bold`}>
+    Transaksi Terakhir
+  </h2>
+
   {#each datas as data}
     <button use:ripple class={`flex justify-between items-center w-full h-fit px-3 py-2 bg-white my-2 border border-grey rounded-lg`}>
       <div class="flex items-center">

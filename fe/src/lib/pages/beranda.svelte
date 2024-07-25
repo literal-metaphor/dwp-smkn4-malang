@@ -28,7 +28,7 @@
 <div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
 
   <!-- Featured product -->
-  <h2 class={`text-lg font-bold`}>
+  <h2 class={`text-xl ms-2 font-bold`}>
       Produk Unggulan
   </h2>
 

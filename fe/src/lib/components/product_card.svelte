@@ -10,29 +10,26 @@
   export let data: ProductData;
 </script>
 
-<div class={`w-[40vw] p-4 border border-grey rounded-lg m-2`}>
+<div class={`w-[40vw] p-2 border border-grey rounded-lg m-2`}>
   {#if data.images && data.images.length > 0}
-  <Carousel
-    items={
-      data.images.map((image) => {
-        return { img: image, alt: "Product" };
-      })
-    }
-  />
+    <Carousel
+      items={
+        data.images.map((image) => {
+          return { img: image, alt: "Product" };
+        })
+      }
+    />
   {:else}
     <img src={noimage} alt="Product" class={`w-full h-auto rounded-lg`}>
   {/if}
 
-  <br>
-
-  <h3 class={`text-md font-medium`}>
+  <h3 class={`text-md font-medium text-center my-2`}>
       {data.name.length > 20 ? data.name.slice(0, 20) + "..." : data.name}
   </h3>
-  <p class={`text-sm font-medium`}>
+
+  <p class={`text-sm font-semibold text-center my-2`}>
       {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.price)}
   </p>
-
-  <br>
 
   <!-- () => { sessionPage.set(`produk?id${id}`) } --> <!-- Use this one later -->
   <button use:ripple type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 active:scale-90 transition duration-300`}>
