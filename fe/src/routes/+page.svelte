@@ -3,6 +3,7 @@
 
     import Beranda from "$lib/pages/beranda.svelte";
     import Koleksi from "$lib/pages/koleksi.svelte";
+	import Riwayat from "$lib/pages/riwayat.svelte";
 
     $: $sessionPage;
 </script>
@@ -14,5 +15,9 @@
 
     {#if $sessionPage === "koleksi"}
         <Koleksi />
+    {/if}
+
+    {#if $sessionPage === "riwayat"}
+        <Riwayat />
     {/if}
 </div>

@@ -50,6 +50,7 @@ export const transactionData: TransactionData = {
   id: "1",
   customer: userData,
   items: [transactionItemData, transactionItemData, transactionItemData],
+  method: "cod",
   created_at: "2020-01-01",
   updated_at: "2020-01-01",
 }
