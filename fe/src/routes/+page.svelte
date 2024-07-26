@@ -9,7 +9,7 @@
     $: $sessionPage;
 </script>
 
-<div class="pt-32 pb-32 lg:pb-0 lg:ps-32"> <!-- Need to add bottom padding because position fixed block the last item -->
+<div class="pt-24 lg:pt-32 pb-32 lg:pb-0 lg:ps-32"> <!-- Padding because fixed navbar and header would block the contents -->
     {#if $sessionPage === "beranda"}
         <Beranda />
     {/if}

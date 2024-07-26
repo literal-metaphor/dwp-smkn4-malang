@@ -10,7 +10,7 @@
   import { ripple } from 'svelte-ripple-action';
 
   // Sample data
-  const productDatas: ProductData[] = [productData, productData, productData, productData, productData];
+  const productDatas: ProductData[] = [productData, productData, productData, productData, productData, productData, productData, productData, productData, productData];
   const categories: { value: string, label: string }[] = [
     { value: "all", label: "Semua" },
     { value: "food", label: "Makanan" },
@@ -23,12 +23,13 @@
 
   // Reactive values
   $: currentCategory = "all";
+  $: filteredProducts = productDatas.filter((productData) => currentCategory === "all" || currentCategory === productData.category);
 </script>
 
-<div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
+<div class={`lg:container overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
 
   <!-- Featured product -->
-  <h2 class={`text-xl ms-2 font-bold`}>
+  <!-- <h2 class={`text-xl ms-2 font-bold`}>
       Produk Unggulan
   </h2>
 
@@ -46,40 +47,97 @@
     </div>
   </div>
 
-  <br>
+  <br> -->
 
-  <!-- Categories -->
-  <div class={`flex items-center overflow-x-auto`}>
-    {#each categories as category}
-      <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
-        {category.label}
-      </button>
-    {/each}
-   </div>
+  <!-- Desktop design -->
+  <div class="hidden lg:grid grid-cols-12 lg:w-[80vw] h-[70vh]">
 
-   <br>
-
-  <!-- Search bar -->
-  <!-- TODO: write search endpoint on laravel backend -->
-  <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
-  <div class={`relative`}>
-    <div class={`absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none`}>
-      <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-      </svg>
+    <!-- Categories -->
+    <div class={`hidden lg:flex flex-col items-center col-span-3 min-h-full p-4 bg-white border border-grey rounded-lg me-4`}>
+      <p class="text-xl font-bold">Kategori</p>
+      <br>
+      {#each categories as category}
+        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`my-1 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white border border-grey`} rounded-full text-sm px-4 py-2 w-full transition duration-300 text-nowrap min-w-fit active:scale-90 `}>
+          {category.label}
+        </button>
+      {/each}
     </div>
-    <input type="text" id="search" name="search" class={`block w-full p-4 ps-10 text-sm text-black rounded-lg bg-white border border-grey focus:ring-1 focus:ring-french-violet focus:outline-none transition duration-300`} placeholder="Cari merek atau produk" autocomplete="off" required/>
+
+    <div class="flex flex-col col-span-12 lg:col-span-9 min-h-full">
+
+      <!-- Categories (mobile) -->
+      <div class={`flex items-center overflow-x-auto lg:hidden`}>
+        {#each categories as category}
+          <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+            {category.label}
+          </button>
+        {/each}
+      </div>
+
+      <br class="lg:hidden">
+
+      <!-- Search bar -->
+      <!-- TODO: write search endpoint on laravel backend -->
+      <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
+      <div class={`relative p-1`}>
+        <div class={`absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none`}>
+          <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+          </svg>
+        </div>
+        <input type="text" id="search" name="search" class={`block w-full p-4 ps-10 text-sm text-black rounded-lg bg-white border border-grey focus:ring-1 focus:ring-french-violet focus:outline-none transition duration-300`} placeholder="Cari merek atau produk" autocomplete="off" required/>
+      </div>
+
+      <br>
+
+      <!-- Products -->
+      <div class={`flex items-center flex-wrap max-h-full overflow-y-auto`}>
+        {#each productDatas as productData}
+          {#if currentCategory === "all" || currentCategory === productData.category}
+            <ProductCard data={productData} />
+          {/if}
+        {/each}
+      </div>
+
+    </div>
+
   </div>
 
-  <br>
+  <!-- Mobile design -->
+   <div class="lg:hidden">
 
-  <!-- Products -->
-  <div class={`flex items-center flex-wrap`}>
-    {#each productDatas as productData}
-      {#if currentCategory === "all" || currentCategory === productData.category}
-        <ProductCard data={productData} />
-      {/if}
-    {/each}
-  </div>
+    <!-- Categories -->
+    <div class={`flex items-center overflow-x-auto`}>
+      {#each categories as category}
+        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+          {category.label}
+        </button>
+      {/each}
+    </div>
+
+    <br>
+
+    <!-- Search bar -->
+    <!-- TODO: write search endpoint on laravel backend -->
+    <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
+    <div class={`relative`}>
+      <div class={`absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none`}>
+        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+        </svg>
+      </div>
+      <input type="text" id="search" name="search" class={`block w-full p-4 ps-10 text-sm text-black rounded-lg bg-white border border-grey focus:ring-1 focus:ring-french-violet focus:outline-none transition duration-300`} placeholder="Cari merek atau produk" autocomplete="off" required/>
+    </div>
+
+    <br>
+
+    <!-- Products -->
+    <div class={`flex justify-between items-center flex-wrap`}>
+      {#each filteredProducts as product}
+        <ProductCard data={product} />
+      {/each}
+    </div>
+
+   </div>
 
 </div>

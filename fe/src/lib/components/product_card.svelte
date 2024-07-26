@@ -10,7 +10,7 @@
   export let data: ProductData;
 </script>
 
-<div class={`w-[40vw] p-2 border border-grey rounded-lg m-2`}>
+<div class={`w-[40vw] lg:w-[12vw] p-2 border border-grey rounded-lg m-2`}>
   {#if data.images && data.images.length > 0}
     <Carousel
       items={

@@ -10,10 +10,10 @@
 	import { ripple } from "svelte-ripple-action";
 </script>
 
-<div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
+<div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
 
   <!-- Profile -->
-  <div class={`flex justify-start items-center w-full h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
+  <div class={`flex justify-start items-center w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
     <img src={userData.avatar || userPlaceholder} alt="Profile" class="size-12 me-4">
     <div class="flex flex-col items-start">
       <p class="text-md font-semibold">{shopData ? shopData.name : userData.first_name + " " + (userData.last_name || "")}</p>
@@ -22,7 +22,7 @@
   </div>
 
   <!-- Options -->
-  <div class={`flex justify-center flex-col w-full h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
+  <div class={`flex justify-center flex-col w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
     {#each [
       { icon: shopBtn, label: 'Toko Anda', condition: shopData },
       { icon: securityBtn, label: 'Ubah Kata Sandi', condition: true },
