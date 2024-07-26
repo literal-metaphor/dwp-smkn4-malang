@@ -21,7 +21,7 @@
 </script>
 
 {#if layoutedPages.includes($sessionPage)}
-    <header class="overflow-x-hidden w-screen h-fit p-4 bg-white border-b border-b-grey flex justify-center items-center">
+    <header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">
         <div class="flex justify-center items-center">
             <img src={logo} alt="Logo" class="me-4 size-12">
             <h1 class="text-md font-bold">DWP SMKN 4 Malang</h1>
@@ -37,7 +37,7 @@
 
     <slot />
 
-    <footer class="overflow-x-hidden w-screen h-fit p-4 bg-white border-t border-t-grey flex justify-around items-center fixed bottom-0">
+    <footer class="overflow-x-hidden w-screen h-fit lg:w-fit lg:col-span-1 lg:h-screen p-4 bg-white border border-grey flex lg:flex-col justify-center items-center fixed bottom-0">
         <NavbarButton option={`beranda`} />
         <NavbarButton option={`koleksi`} />
         <NavbarButton option={`riwayat`} />
