@@ -12,7 +12,7 @@
   }
 </script>
 
-<div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen lg:h-[80vh] p-4`}>
+<div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
 
   <h2 class={`text-xl ms-2 mb-2 font-bold`}>
     Transaksi Terakhir

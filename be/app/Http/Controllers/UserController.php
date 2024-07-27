@@ -50,6 +50,47 @@ class UserController extends Controller
     }
 
     /**
+     * Handle OAuth for a user
+     */
+    public function oauth(Request $req) {
+        $data = $this->validateRequest($req, [
+            "email" => "required|email|max:255",
+            "password" => "required|string|max:255"
+        ]);
+
+        // Check if the email is already registered
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            // If the user exists, log them in
+            if (!Hash::check($data['password'], $user->password)) {
+                return response()->json(['message' => 'Invalid password'], 401);
+            }
+            if ($user->banned) {
+                return response()->json(['message' => 'User is banned'], 401);
+            }
+            $user->remember_token = bin2hex(random_bytes(16));
+            $user->save();
+            return response()->json($user);
+        } else {
+            $data = $this->validateUserData($req);
+
+            // If the user doesn't exist, register them
+            $data['password'] = Hash::make($data['password']);
+            $data['id'] = Str::uuid();
+            $data['remember_token'] = bin2hex(random_bytes(16));
+
+            try {
+                $user = User::create($data);
+                return response()->json($user);
+            } catch (\Throwable $e) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+        }
+    }
+
+
+    /**
      * Register a new user and create a new token for them
      */
     public function register(Request $req) {

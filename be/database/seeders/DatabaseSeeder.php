@@ -22,8 +22,6 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('superadmin'), // !change this into client's request during production
             'first_name' => 'Super',
             'last_name' => 'Admin',
-            'cell_phone_number' => '1234567890',
-            'country_code' => '62',
             'is_admin' => true,
         ]);
     }

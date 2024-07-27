@@ -1,30 +1,44 @@
 <script lang="ts">
-  import { userData } from "$lib/types/Sample";
-  import { shopData } from "$lib/types/Sample";
+  // Get profile data
+  let userData = localStorage.getItem("userData");
+  let parsedUserData = {} as UserData;
+  if (userData && typeof userData === "string") {
+    parsedUserData = JSON.parse(userData) as UserData;
+  }
+  let userShopData = localStorage.getItem("userShopData");
+  let parsedUserShopData = {} as ShopData;
+  if (userShopData && typeof userShopData === "string") {
+    parsedUserShopData = JSON.parse(userShopData) as ShopData;
+  }
 
+  // Images
   import userPlaceholder from "$lib/assets/profile.svg";
   import shopBtn from "$lib/assets/shop.svg";
   import callBtn from "$lib/assets/call.svg";
   import tosBtn from "$lib/assets/tos.svg";
   import securityBtn from "$lib/assets/padlock.svg";
+
+  // Depedencies
 	import { ripple } from "svelte-ripple-action";
+	import type UserData from "$lib/types/UserData";
+	import type ShopData from "$lib/types/ShopData";
 </script>
 
 <div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
 
   <!-- Profile -->
   <div class={`flex justify-start items-center w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
-    <img src={userData.avatar || userPlaceholder} alt="Profile" class="size-12 me-4">
+    <img src={parsedUserData.avatar || userPlaceholder} alt="Profile" class="size-12 me-4">
     <div class="flex flex-col items-start">
-      <p class="text-md font-semibold">{shopData ? shopData.name : userData.first_name + " " + (userData.last_name || "")}</p>
-      <p class="text-sm opacity-50">{userData.email}</p>
+      <p class="text-md font-semibold">{parsedUserData.first_name + " " + (parsedUserData.last_name || "")}</p>
+      <p class="text-sm opacity-50">{parsedUserData.email}</p>
     </div>
   </div>
 
   <!-- Options -->
   <div class={`flex justify-center flex-col w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
     {#each [
-      { icon: shopBtn, label: 'Toko Anda', condition: shopData },
+      { icon: shopBtn, label: 'Toko Anda', condition: userShopData },
       { icon: securityBtn, label: 'Ubah Kata Sandi', condition: true },
       { icon: callBtn, label: 'Kontak Admin', condition: true },
       { icon: tosBtn, label: 'Ketentuan Layanan', condition: true },
@@ -39,8 +53,13 @@
 
     <br>
 
-    <button use:ripple class={`flex justify-center items-center w-full h-fit p-2 bg-french-violet text-white my-2 border border-grey rounded-lg active:scale-90 transition duration-300`}>
-      Log out
+    <button on:click={() => {
+      if (confirm("Apakah Anda yakin ingin keluar?")) {
+        localStorage.removeItem("userData");
+        location.reload();
+      }
+    }} use:ripple class={`flex justify-center items-center w-full h-fit p-2 bg-french-violet text-white my-2 border border-grey rounded-lg active:scale-90 transition duration-300`}>
+      Keluar
     </button>
   </div>
 </div>

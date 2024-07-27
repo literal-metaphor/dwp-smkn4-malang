@@ -15,25 +15,57 @@
     import "svelte-ripple-action/ripple.css";
     import { ripple } from 'svelte-ripple-action';
 	import { onMount } from "svelte";
+	import { guard, authStatus } from "$lib/utils/guard";
+	import type UserData from "$lib/types/UserData";
 
-    $: auth = false;
+    // Guard functionality
+    $: $authStatus;
     onMount(() => {
-        if (localStorage.getItem("userData")) {
-            auth = true;
+        async function checkAuth() {
+            const userData = localStorage.getItem("userData");
+            if (userData && typeof userData === "string") {
+                try {
+                    authStatus.set(true);
+                    const parsedUserData: UserData = JSON.parse(userData);
+                    guard(parsedUserData.id, parsedUserData.remember_token);
+                } catch (err) {
+                    console.log(err);
+                    alert(err instanceof Error ? err.message : "Terjadi kesalahan autentikasi");
+                    localStorage.removeItem("userData");
+                    authStatus.set(false);
+                    location.reload();
+                }
+            }
         }
+        checkAuth();
+        sessionPage.subscribe(checkAuth)
     })
 
+    // Store sessionPage on sessionStorage
+    onMount(() => {
+        const sessionStoragePage = sessionStorage.getItem("sessionPage");
+        if (sessionStoragePage && typeof sessionStoragePage === "string") {
+            sessionPage.set(sessionStoragePage);
+        }
+        sessionPage.subscribe((val) => {
+            sessionStorage.setItem("sessionPage", val);
+        })
+    })
+
+    // Define which pages should be layouted
     const layoutedPages = ["beranda", "koleksi", "riwayat", "profile"];
 
     // export let data: LayoutData;
 </script>
 
-{#if auth}
+{#if authStatus}
 
 {#if layoutedPages.includes($sessionPage)}
     <header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">
         <div class="flex justify-center items-center">
-            <img src={logo} alt="Logo" class="me-4 size-12">
+            <button on:click={() => sessionPage.set("landing")} type="button">
+                <img src={logo} alt="Logo" class="me-4 size-12">
+            </button>
             <h1 class="text-md font-bold">DWP SMKN 4 Malang</h1>
         </div>
         <button use:ripple class={`rounded-full size-12 ms-8 p-3 mx-1 ${$sessionPage === "troli" ? `bg-french-violet text-white`: ``} flex justify-center items-center active:scale-90 transition duration-300`}} on:click={() => sessionPage.set("troli")}>

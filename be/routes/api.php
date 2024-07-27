@@ -5,7 +5,6 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingController;
-use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +21,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}', [UserController::class, 'verify']);
         Route::put('/', [UserController::class, 'login']);
         Route::delete('/{id}', [UserController::class, 'logout']);
+        Route::post('/oauth', [UserController::class, 'oauth']);
 
         Route::prefix('/admin')->group(function () {
             Route::put('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
