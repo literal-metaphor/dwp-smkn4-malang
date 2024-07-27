@@ -18,10 +18,10 @@
     Transaksi Terakhir
   </h2>
 
-  <div class="flex lg:items-center w-full h-full flex-col overflow-y-auto">
+  <div class="flex lg:items-center w-full lg:w-[32%] h-full flex-col overflow-y-auto">
 
     {#each datas as data}
-      <button use:ripple class={`flex justify-between items-center w-full lg:w-[32%] h-fit px-4 py-4 bg-white my-2 border border-grey rounded-lg`}>
+      <button use:ripple class={`flex justify-between items-center w-full h-fit px-4 py-4 bg-white my-2 border border-grey rounded-lg`}>
         <div class="flex items-center">
           <img src={transactionImg} alt="Transaction" class={`size-8 rounded-full me-3`}>
           <p class="">Pembayaran / {methods[data.method]}</p>
