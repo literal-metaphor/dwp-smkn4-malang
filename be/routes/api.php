@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('/admin')->group(function () {
             Route::put('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
             Route::put('/{id}/toggle-admin', [UserController::class, 'toggleAdmin']);
+            Route::put('/{id}/toggle-shop', [UserController::class, 'toggleShop']);
         });
     });
 
@@ -45,20 +46,10 @@ Route::prefix('v1')->group(function () {
         Route::delete('/avatar/{id}', [UserController::class, 'destroyAvatar']);
     });
 
-    // * Shop Routes
-    Route::prefix('/shop')->group(function () {
-        Route::get('/', [ShopController::class, 'index']);
-        Route::get('/{id}', [ShopController::class, 'show']);
-        Route::middleware([AdminOnly::class])->group(function () {
-            Route::post('/', [ShopController::class, 'store']);
-            Route::put('/{id}', [ShopController::class, 'update']);
-            Route::delete('/{id}', [ShopController::class, 'destroy']);
-        });
-    });
-
     // * Product Routes
     Route::prefix('/product')->group(function () {
         Route::get('/', [ProductController::class, 'index']);
+        Route::get('/paginate', [ProductController::class, 'paginate']);
         Route::get('/{id}', [ProductController::class, 'show']);
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{id}', [ProductController::class, 'update']);

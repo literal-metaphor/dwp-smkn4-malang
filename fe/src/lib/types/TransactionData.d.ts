@@ -3,7 +3,8 @@ import type UserData from "./UserData";
 
 export default interface TransactionData {
   id: string;
-  customer: UserData;
+  customer: UserData?;
+  customer_id: string;
   items: TransactionItemData[];
   method: "cod";
   created_at: string;

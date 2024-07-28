@@ -5,11 +5,6 @@
   if (userData && typeof userData === "string") {
     parsedUserData = JSON.parse(userData) as UserData;
   }
-  let userShopData = localStorage.getItem("userShopData");
-  let parsedUserShopData = {} as ShopData;
-  if (userShopData && typeof userShopData === "string") {
-    parsedUserShopData = JSON.parse(userShopData) as ShopData;
-  }
 
   // Images
   import userPlaceholder from "$lib/assets/profile.svg";
@@ -21,7 +16,6 @@
   // Depedencies
 	import { ripple } from "svelte-ripple-action";
 	import type UserData from "$lib/types/UserData";
-	import type ShopData from "$lib/types/ShopData";
 </script>
 
 <div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
@@ -38,17 +32,14 @@
   <!-- Options -->
   <div class={`flex justify-center flex-col w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}>
     {#each [
-      { icon: shopBtn, label: 'Toko Anda', condition: userShopData },
-      { icon: securityBtn, label: 'Ubah Kata Sandi', condition: true },
-      { icon: callBtn, label: 'Kontak Admin', condition: true },
-      { icon: tosBtn, label: 'Ketentuan Layanan', condition: true },
+      { icon: securityBtn, label: 'Ubah Kata Sandi' },
+      { icon: callBtn, label: 'Kontak Admin' },
+      { icon: tosBtn, label: 'Ketentuan Layanan' },
     ] as item}
-      {#if item.condition}
-        <button use:ripple class={`flex justify-start items-center w-full h-fit p-2 bg-white my-2 border border-grey rounded-lg`}>
-          <img src={item.icon} alt={item.label} class="size-6 me-2">
-          <p class="text-[16px] font-semibold">{item.label}</p>
-        </button>
-      {/if}
+      <button use:ripple class={`flex justify-start items-center w-full h-fit p-2 bg-white my-2 border border-grey rounded-lg`}>
+        <img src={item.icon} alt={item.label} class="size-6 me-2">
+        <p class="text-[16px] font-semibold">{item.label}</p>
+      </button>
     {/each}
 
     <br>

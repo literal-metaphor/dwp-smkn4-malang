@@ -61,12 +61,12 @@ abstract class Controller
      * @param \Illuminate\Http\Request $request The request object.
      * @param array $rules The rules to validate.
      *
-     * @return array
+     * @return array of only validated input.
      */
     protected function validateRequest(Request $request, array $rules): array
     {
-        $request->only(array_keys($rules));
         $request->validate($rules);
-        return $request->all();
+        $data = $request->only(array_keys($rules));
+        return $data;
     }
 }

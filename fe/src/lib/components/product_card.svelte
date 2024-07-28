@@ -24,7 +24,7 @@
   {/if}
 
   <h3 class={`text-md font-medium text-center my-2`}>
-      {data.name.length > 20 ? data.name.slice(0, 20) + "..." : data.name}
+      {data.name.length > 10 ? data.name.slice(0, 10) + "..." : data.name}
   </h3>
 
   <p class={`text-sm font-semibold text-center my-2`}>
@@ -32,7 +32,7 @@
   </p>
 
   <!-- () => { sessionPage.set(`produk?id${id}`) } --> <!-- Use this one later -->
-  <button use:ripple type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 transition duration-300`}>
+  <button use:ripple type="button" class={`w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 transition duration-300`}>
       Lihat Produk
   </button>
 </div>

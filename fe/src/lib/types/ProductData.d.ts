@@ -1,8 +1,9 @@
-import type ShopData from "./ShopData";
+import type UserData from "./UserData";
 
 export default interface ProductData {
   id: string;
-  shop: ShopData;
+  owner_id: string;
+  owner: UserData?;
   name: string;
   description: string;
   price: number;

@@ -35,19 +35,19 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('merchant'), // !change this into client's request during production
             'first_name' => 'Merchant',
             'last_name' => 'User',
-            'is_admin' => false,
+            'is_shop' => true,
         ]);
-        $shop = Shop::create([
-            'id' => Str::uuid(),
-            'name' => 'Merchant Shop',
-            'owner_id' => $merchant->id
-        ]);
+        // $shop = Shop::create([
+        //     'id' => Str::uuid(),
+        //     'name' => 'Merchant Shop',
+        //     'owner_id' => $merchant->id
+        // ]);
 
         // Create some products
         $productData = [
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => 'Pizza',
                 'description' => 'A delicious pizza',
                 'price' => 10000,
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => 'Cola',
                 'description' => 'A popular soda drink',
                 'price' => 2000,
@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => 'Little Black Dress',
                 'description' => 'A classic little black dress for women',
                 'price' => 50000,
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => 'Formal Suit',
                 'description' => 'A high-quality formal suit for men',
                 'price' => 150000,
@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => "Children's T-Shirt",
                 'description' => 'A fun and colorful t-shirt for children',
                 'price' => 10000,
@@ -87,7 +87,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'id' => Str::uuid(),
-                'shop_id' => $shop->id,
+                'owner_id' => $merchant->id,
                 'name' => 'Modern Sofa',
                 'description' => 'A comfortable and stylish sofa for your living room',
                 'price' => 500000,

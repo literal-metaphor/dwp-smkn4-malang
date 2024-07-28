@@ -266,6 +266,21 @@ class UserController extends Controller
     }
 
     /**
+     * Toggle shop status
+     */
+    public function toggleShop(Request $req, string $id) {
+        try {
+            $this->assertAdmin($req);
+            $user = User::findOrFail($id);
+            $user->is_shop = !$user->is_shop;
+            $user->save();
+            return response()->json(['message' => "$user->username is now ".($user->is_shop ? 'promoted to shop' : 'demoted from shop') . "."]);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Get the user's avatar
      */
     public function getAvatar(string $id) {

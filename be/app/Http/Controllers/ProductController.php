@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     private function validateProductData(Request $req) {
         return $this->validateRequest($req, [
-            'shop_id' => 'required|uuid|exists:shops,id',
+            'owner_id' => 'required|uuid|exists:users,id',
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
             'description' => 'string|nullable',
@@ -29,13 +29,12 @@ class ProductController extends Controller
     /**
      * Check if the user is the shopkeeper of the shop or an admin
      */
-    public function assertAuthorized(Request $req, string $shop_id) {
+    public function assertAuthorized(Request $req) {
         // Check if the user is an admin
         if (!User::where('remember_token', $req->bearerToken())->first()->is_admin) {
             // Check if the user is the shopkeeper of the shop
             $user = User::where('remember_token', $req->bearerToken())->first();
-            $shop = Shop::findOrFail($shop_id);
-            if ($shop->owner_id !== $user->id) {
+            if (!$user->is_shop) {
                 // return response()->json(['message' => 'User is not authorized'], 401);
                 throw new \Exception('User is not authorized');
             }
@@ -57,13 +56,20 @@ class ProductController extends Controller
     }
 
     /**
+     * Paginate some products
+     */
+    public function paginate() {
+        return response()->json(Product::orderBy('created_at', 'desc')->paginate(10));
+    }
+
+    /**
      * Create a new product
      */
     public function store(Request $req) {
         try {
             $data = $this->validateProductData($req);
 
-            $this->assertAuthorized($req, $data['shop_id']);
+            $this->assertAuthorized($req);
 
             $data['id'] = Str::uuid();
 
@@ -80,7 +86,7 @@ class ProductController extends Controller
         try {
             $data = $this->validateProductData($req);
 
-            $this->assertAuthorized($req, $data['shop_id']);
+            $this->assertAuthorized($req);
 
             Product::findOrFail($id)->update($data);
 
@@ -95,8 +101,7 @@ class ProductController extends Controller
      */
     public function destroy(Request $req, string $shop_id, string $id) {
         try {
-            $this->assertAuthorized($req, $shop_id);
-            Product::findOrFail($id)->delete();
+            $this->assertAuthorized($req);
             return response()->json(['message' => 'Product deleted']);
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -117,7 +122,7 @@ class ProductController extends Controller
      */
     public function addPhoto(Request $req, string $shop_id, string $id) {
         try {
-            $this->assertAuthorized($req, $shop_id);
+            $this->assertAuthorized($req);
 
             $req->validate(['file' => 'required|max:10240|mimes:jpeg,png,jpg,svg']);
 
@@ -150,7 +155,7 @@ class ProductController extends Controller
      */
     public function deletePhoto(Request $req, string $shop_id, string $id, string $photo_id) {
         try {
-            $this->assertAuthorized($req, $shop_id);
+            $this->assertAuthorized($req);
 
             // Check if the product exists
             Product::findOrFail($id);

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->uuid('avatar_id')->nullable();
             $table->boolean('banned')->default(false);
+            $table->boolean('is_shop')->default(false);
             $table->boolean('is_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();

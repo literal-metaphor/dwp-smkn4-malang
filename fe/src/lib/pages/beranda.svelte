@@ -4,13 +4,37 @@
   import ProductCard from '$lib/components/product_card.svelte';
 	import type ProductData from '$lib/types/ProductData';
 	import { productData } from "$lib/types/Sample";
+	import { api } from "$lib/utils/api";
+	import { onMount } from "svelte";
+	import InfiniteScroll from "svelte-infinite-scroll";
   // import noimage from "$lib/assets/noimage.svg";
 
   // Dependencies
   import { ripple } from 'svelte-ripple-action';
 
-  // Sample data
-  const productDatas: ProductData[] = [productData, productData, productData, productData, productData, productData, productData, productData, productData, productData];
+  // Get products
+  let products: ProductData[] | [] = [];
+  $: productsLastPage = 1;
+  $: productsPage = 1;
+  async function getProducts() {
+    if (productsPage > productsLastPage) {
+      productsPage = 1;
+    };
+    try {
+      const productsRes = await api.get(`/product/paginate?page=${productsPage}`);
+      products = [...products, ...productsRes.data.data];
+      productsLastPage = productsRes.data.last_page;
+    } catch (err) {
+      console.log(err);
+      alert(err instanceof Error ? err.message : "Terjadi kesalahan saat memuat produk.");
+    }
+  }
+  onMount(async () => {
+    await getProducts();
+  });
+
+
+  // Assert categories
   const categories: { value: string, label: string }[] = [
     { value: "all", label: "Semua" },
     { value: "food", label: "Makanan" },
@@ -23,7 +47,7 @@
 
   // Reactive values
   $: currentCategory = "all";
-  $: filteredProducts = productDatas.filter((productData) => currentCategory === "all" || currentCategory === productData.category);
+  $: filteredProducts = products.filter((productData) => currentCategory === "all" || currentCategory === productData.category);
 </script>
 
 <div class={`lg:container overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
@@ -91,13 +115,18 @@
       <br>
 
       <!-- Products -->
-      <div class={`flex items-center flex-wrap max-h-full overflow-y-auto`}>
-        {#each productDatas as productData}
+      <ul class={`flex items-center flex-wrap max-h-full overflow-y-auto`}>
+        {#each products as productData}
           {#if currentCategory === "all" || currentCategory === productData.category}
             <ProductCard data={productData} />
           {/if}
         {/each}
-      </div>
+        <InfiniteScroll threshold={10} on:loadMore={getProducts} />
+        <svg class="animate-spin h-16 w-16 ms-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="#125FF3" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </ul>
 
     </div>
 
@@ -132,11 +161,14 @@
     <br>
 
     <!-- Products -->
-    <div class={`flex justify-between items-center flex-wrap`}>
-      {#each filteredProducts as product}
-        <ProductCard data={product} />
+    <ul class={`flex items-center flex-wrap max-h-full overflow-y-auto`}>
+      {#each products as productData}
+        {#if currentCategory === "all" || currentCategory === productData.category}
+          <ProductCard data={productData} />
+        {/if}
       {/each}
-    </div>
+      <InfiniteScroll threshold={10} on:loadMore={getProducts} />
+    </ul>
 
    </div>
 
