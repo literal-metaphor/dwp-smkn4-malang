@@ -41,7 +41,7 @@
         <h1 class={`text-lg text-white mb-4`}>
           "Koleksi Baju Modern"
         </h1>
-        <button use:ripple type="button" class={`text-black bg-white active:scale-90 rounded-full text-sm px-4 py-2 transition duration-300`}>
+        <button use:ripple type="button" class={`text-black bg-white rounded-full text-sm px-4 py-2 transition duration-300`}>
             Lihat Selengkapnya →
         </button>
     </div>
@@ -50,14 +50,14 @@
   <br> -->
 
   <!-- Desktop design -->
-  <div class="hidden lg:grid grid-cols-12 lg:w-[80vw] h-[70vh]">
+  <div class="hidden lg:grid grid-cols-12 lg:w-[85vw] h-[70vh]">
 
     <!-- Categories -->
     <div class={`hidden lg:flex flex-col items-center col-span-3 min-h-full p-4 bg-white border border-grey rounded-lg me-4`}>
       <p class="text-xl font-bold">Kategori</p>
       <br>
       {#each categories as category}
-        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`my-1 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white border border-grey`} rounded-full text-sm px-4 py-2 w-full transition duration-300 text-nowrap min-w-fit active:scale-90 `}>
+        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`my-1 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white border border-grey`} rounded-full text-sm px-4 py-2 w-full transition duration-300 text-nowrap min-w-fit `}>
           {category.label}
         </button>
       {/each}
@@ -68,7 +68,7 @@
       <!-- Categories (mobile) -->
       <div class={`flex items-center overflow-x-auto lg:hidden`}>
         {#each categories as category}
-          <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+          <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit`}>
             {category.label}
           </button>
         {/each}
@@ -109,7 +109,7 @@
     <!-- Categories -->
     <div class={`flex items-center overflow-x-auto`}>
       {#each categories as category}
-        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit active:scale-90`}>
+        <button use:ripple on:click={() => currentCategory = category.value} type="button" class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit`}>
           {category.label}
         </button>
       {/each}

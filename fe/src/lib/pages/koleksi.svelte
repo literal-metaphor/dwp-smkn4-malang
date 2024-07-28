@@ -11,10 +11,10 @@
 
 <div class={`lg:container overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
   <!-- Desktop design -->
-  <div class="hidden lg:grid grid-cols-12 lg:w-[80vw] h-[70vh]">
+  <div class="hidden lg:grid grid-cols-12 lg:w-[85vw] h-[70vh]">
 
     <!-- Aside -->
-    <aside class={`hidden lg:flex flex-col items-center col-span-3 min-h-full p-4 bg-white border border-grey rounded-lg me-4`}>
+    <!-- <aside class={`hidden lg:flex flex-col items-center col-span-3 min-h-full p-4 bg-white border border-grey rounded-lg me-4`}>
       {#if productDatas[0]?.images?.[0]}
         <img src={productDatas[0].images[0]} alt="Product" class="size-48">
       {:else}
@@ -23,9 +23,9 @@
       <br>
       <p class="text-xl font-bold">Koleksi</p>
       <p class="text-sm opacity-50">{userData.username} | {productDatas.length} Produk</p>
-    </aside>
+    </aside> -->
 
-    <div class="flex flex-col col-span-12 lg:col-span-9 min-h-full">
+    <div class="flex flex-col col-span-12 //lg:col-span-9 min-h-full">
       <!-- Search bar -->
       <!-- TODO: write search endpoint on laravel backend -->
       <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>

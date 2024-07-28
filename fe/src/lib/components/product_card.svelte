@@ -32,7 +32,7 @@
   </p>
 
   <!-- () => { sessionPage.set(`produk?id${id}`) } --> <!-- Use this one later -->
-  <button use:ripple type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 active:scale-90 transition duration-300`}>
+  <button use:ripple type="button" class={`me-2 w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 transition duration-300`}>
       Lihat Produk
   </button>
 </div>

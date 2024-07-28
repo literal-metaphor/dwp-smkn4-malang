@@ -55,7 +55,8 @@
 
     <button on:click={() => {
       if (confirm("Apakah Anda yakin ingin keluar?")) {
-        localStorage.removeItem("userData");
+        localStorage.clear();
+        sessionStorage.clear();
         location.reload();
       }
     }} use:ripple class={`flex justify-center items-center w-full h-fit p-2 bg-french-violet text-white my-2 border border-grey rounded-lg active:scale-90 transition duration-300`}>

@@ -15,29 +15,44 @@
     import "svelte-ripple-action/ripple.css";
     import { ripple } from 'svelte-ripple-action';
 	import { onMount } from "svelte";
-	import { guard, authStatus } from "$lib/utils/guard";
+	import { authStatus } from "$lib/utils/guard";
 	import type UserData from "$lib/types/UserData";
+	import { api } from "$lib/utils/api";
 
     // Guard functionality
     $: $authStatus;
-    onMount(() => {
+    onMount(async () => {
         async function checkAuth() {
-            const userData = localStorage.getItem("userData");
-            if (userData && typeof userData === "string") {
+            const userData: UserData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+            function handleErr() {
+                // Prevent user from accessing protected pages
+                authStatus.set(false);
+                localStorage.clear();
+                sessionStorage.clear();
+                location.reload();
+            }
+
+            if (userData.id && userData.remember_token) {
                 try {
                     authStatus.set(true);
-                    const parsedUserData: UserData = JSON.parse(userData);
-                    guard(parsedUserData.id, parsedUserData.remember_token);
+                    const res = await api.get(`/auth/${userData.id}`, { headers: { Authorization: `Bearer ${userData.remember_token}` } });
+
+                    if (!res.status.toString().startsWith("2")) {
+                        throw new Error(res.data.message);
+                    }
                 } catch (err) {
                     console.log(err);
-                    alert(err instanceof Error ? err.message : "Terjadi kesalahan autentikasi");
-                    localStorage.removeItem("userData");
-                    authStatus.set(false);
-                    location.reload();
+                    alert(err instanceof Error ? err.message : "Terjadi kesalahan autentikasi.");
+                    handleErr();
+                }
+            } else {
+                if ($sessionPage !== "landing") {
+                    handleErr();
                 }
             }
         }
-        checkAuth();
+        await checkAuth();
         sessionPage.subscribe(checkAuth)
     })
 
@@ -58,7 +73,7 @@
     // export let data: LayoutData;
 </script>
 
-{#if authStatus}
+{#if $authStatus}
 
 {#if layoutedPages.includes($sessionPage)}
     <header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">

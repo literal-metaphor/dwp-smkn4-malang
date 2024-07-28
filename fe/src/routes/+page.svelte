@@ -10,7 +10,7 @@
     import { onMount } from "svelte";
 	import { authStatus } from "$lib/utils/guard";
 
-    $: authStatus;
+    $: $authStatus;
 
     // Scroll to top functionality
     let isScrolled = false;
@@ -27,7 +27,7 @@
     $: $sessionPage;
 </script>
 
-{#if authStatus}
+{#if $authStatus}
     {#if $sessionPage === "landing"}
         <Landing />
     {:else}
