@@ -8,7 +8,6 @@
 
   // Images
   import userPlaceholder from "$lib/assets/profile.svg";
-  import shopBtn from "$lib/assets/shop.svg";
   import callBtn from "$lib/assets/call.svg";
   import tosBtn from "$lib/assets/tos.svg";
   import securityBtn from "$lib/assets/padlock.svg";

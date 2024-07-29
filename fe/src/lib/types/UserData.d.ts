@@ -6,6 +6,7 @@ export default interface UserData {
   email: string;
   avatar: string?;
   remember_token: string;
+  is_shop: boolean;
   created_at: string;
   updated_at: string;
 }

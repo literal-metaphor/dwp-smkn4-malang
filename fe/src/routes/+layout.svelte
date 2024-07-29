@@ -56,6 +56,9 @@
         sessionPage.subscribe(checkAuth)
     })
 
+    // Determine user's status
+    $: isShop = $authStatus && (JSON.parse(localStorage.getItem("userData") || "{}") as UserData).is_shop;
+
     // Store sessionPage on sessionStorage
     onMount(() => {
         const sessionStoragePage = sessionStorage.getItem("sessionPage");
@@ -93,9 +96,13 @@
     </header>
 
     <footer class="overflow-x-hidden w-screen h-fit lg:w-fit lg:col-span-1 lg:h-screen p-4 bg-white border border-grey flex lg:flex-col justify-center items-center fixed bottom-0">
-        <NavbarButton option={`beranda`} />
-        <NavbarButton option={`koleksi`} />
-        <NavbarButton option={`riwayat`} />
+        {#if !isShop}
+            <NavbarButton option={`beranda`} />
+            <NavbarButton option={`koleksi`} />
+            <NavbarButton option={`riwayat`} />
+        {:else}
+            <NavbarButton option={`toko`} />
+        {/if}
         <NavbarButton option={`profile`} />
     </footer>
 {/if}

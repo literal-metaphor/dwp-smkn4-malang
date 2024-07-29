@@ -13,7 +13,7 @@
   // Depedencies
 	import { ripple } from "svelte-ripple-action";
   import { initializeApp } from "firebase/app";
-  import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+  import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup, type UserCredential } from "firebase/auth";
 	import { onMount } from "svelte";
 	import { api } from "$lib/utils/api";
   import { generateFromEmail } from "unique-username-generator";
@@ -24,6 +24,7 @@
   // Reactive state
   $: isRegister = true;
   $: $authStatus;
+  $: showPassword = false;
 
   // * Firebase auth setup
   onMount(() => {
@@ -43,6 +44,67 @@
   function showAuthModal() {
     const authModal = document.getElementById("auth_modal") as HTMLDialogElement;
     authModal.showModal();
+  }
+
+  async function authWithEmail(e: SubmitEvent) {
+    e.preventDefault();
+    const auth = getAuth();
+
+    try {
+      const form = e as SubmitEvent & { target: HTMLFormElement 
+
+      }; // Type assertion to ensure e is a SubmitEvent
+
+      if (!form.target.email.value || !form.target.password.value) {
+        throw new Error("Email dan password harus diisi");
+      }
+
+      let frbRes: UserCredential;
+
+      if (isRegister) {
+        frbRes = await createUserWithEmailAndPassword(auth, form.target.email.value, form.target.password.value);
+      } else {
+        frbRes = await signInWithEmailAndPassword(auth, form.target.email.value, form.target.password.value);
+
+        if (!frbRes.user.email) {
+          throw new Error("Email tidak valid");
+        }
+
+      // Format the correct first and last name
+      let fullName = frbRes.user.displayName;
+      let first_name = '';
+      let last_name = null;
+      if (fullName) {
+        const nameParts = fullName.split(' ');
+        first_name = nameParts[0];
+        if (nameParts.length > 1) {
+          last_name = nameParts[nameParts.length - 1];
+        }
+      }
+
+      const credentials = {
+        username: generateFromEmail(frbRes.user.email) + (new Date().toString()),
+        email: frbRes.user.email,
+        password: frbRes.user.uid,
+        first_name,
+        last_name,
+      };
+
+      const authRes = (await isRegister ? api.post(`/auth`, credentials) : api.put(`/auth`, { email: frbRes.user.email, password: frbRes.user.uid }));
+      const userData: UserData = (await authRes).data;
+      if (!userData) {
+        throw new Error("Terjadi kesalahan. Mohon coba lagi nanti");
+      }
+
+      localStorage.setItem("userData", JSON.stringify(userData));
+      location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+      if (err instanceof Error) {
+        alert(err.message);
+      }
+    }
   }
 
   async function authWithGoogle() {
@@ -70,7 +132,7 @@
       }
 
       const credentials = {
-        username: generateFromEmail(frbRes.user.email),
+        username: generateFromEmail(frbRes.user.email) + (new Date().toString()),
         email: frbRes.user.email,
         password: frbRes.user.uid,
         first_name,
@@ -99,11 +161,37 @@
 <!-- <button class="daisy-btn" onclick="auth_modal.showModal()">open modal</button> -->
 <dialog id="auth_modal" class="daisy-modal">
   <div class="daisy-modal-box">
-    <h3 class="text-lg font-bold">{isRegister ? "Register" : "Login"}</h3>
+    <h3 class="text-lg font-bold">{isRegister ? "Daftar" : "Masuk"} / <button on:click={() => (isRegister = !isRegister)} class="text-french-violet">{isRegister ? "Masuk" : "Daftar"}</button></h3>
 
     <hr class="my-4">
 
-    <!-- TODO: login with email and password -->
+    <!-- Login with email and password -->
+    <form on:submit={authWithEmail}>
+      <div class="mb-4">
+          <label for="email" class="bloc3 text-sm font-bold mb-2">Email</label>
+          <input name="email" type="email" id="email"
+class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+placeholder="Masukkan Email">
+      </div>
+      <div class="mb-6">
+          <label for="password" class="bloc3 text-sm font-bold mb-2">Password</label>
+          <input name="password" type={showPassword ? `text` : `password`} id="password" class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="******************">
+          <div class="flex items-center my-2">
+            <label for="showPassword" class="text-sm font-bold me-2">Show Password</label>
+            <input name="showPassword" type="checkbox" on:click={() => showPassword = !showPassword } />
+          </div>
+      </div>
+      <div class="flex items-center justify-start space-x-4">
+          <button type="submit" use:ripple class="bg-french-violet text-white font-bold
+py-2 px-4 rounded focus:outline-none focus:shadow-outline">{isRegister ? "Daftar" : "Masuk"}</button>
+<button type="reset" use:ripple class="bg-white text-black border border-grey font-bold
+py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button>
+          <!-- TODO: -->
+          <!-- <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">Forgot Password?</a> -->
+      </div>
+  </form>
+
+  <hr class="my-4">
 
     <!-- Login with Google -->
      <button use:ripple type="button" on:click={authWithGoogle} class="flex items-center bg-white shadow-lg p-4 rounded-lg">
