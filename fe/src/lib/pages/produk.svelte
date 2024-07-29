@@ -441,7 +441,13 @@
                <!-- data because comment is currently used in PostCSS -->
                 <div class="border-t py-2">
                     <!-- <p class="font-bold">@{data.user && data.user.username} - {Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24))} days ago</p> -->
-                    <p class="font-bold"><span class="text-blue">@{data.user && data.user.username}</span> - {(() => { const days = Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24)); return days > 365 ? `${Math.floor(days / 365)} year${Math.floor(days / 365) > 1 ? 's' : ''} ago` : days > 30 ? `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago` : `${days} day${days > 1 ? 's' : ''} ago`; })()}</p>
+                    <p class="font-bold"><span class="text-blue">@{data.user && data.user.username}</span> - {(() => {
+                      const days = Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24));
+                      return days === 0 ? 'Today' :
+                             days > 365 ? `${Math.floor(days / 365)} year${Math.floor(days / 365) > 1 ? 's' : ''} ago` :
+                             days > 30 ? `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago` :
+                             `${days} day${days > 1 ? 's' : ''} ago`;
+                    })()}</p>
                     <p>{data.content}</p>
                 </div>
               {/each}
