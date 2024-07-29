@@ -15,11 +15,8 @@
 	import { initializeApp } from 'firebase/app';
 	import {
 		GoogleAuthProvider,
-		createUserWithEmailAndPassword,
 		getAuth,
-		signInWithEmailAndPassword,
 		signInWithPopup,
-		type UserCredential
 	} from 'firebase/auth';
 	import { onMount } from 'svelte';
 	import { api } from '$lib/utils/api';
@@ -62,49 +59,17 @@
 			if (!form.target.email.value || !form.target.password.value) {
 				throw new Error('Email dan password harus diisi');
 			}
-
-			let frbRes: UserCredential;
-
-			if (isRegister) {
-				frbRes = await createUserWithEmailAndPassword(
-					auth,
-					form.target.email.value,
-					form.target.password.value
-				);
-			} else {
-				frbRes = await signInWithEmailAndPassword(
-					auth,
-					form.target.email.value,
-					form.target.password.value
-				);
-
-				if (!frbRes.user.email) {
-					throw new Error('Email tidak valid');
-				}
-
-				// Format the correct first and last name
-				let fullName = frbRes.user.displayName;
-				let first_name = '';
-				let last_name = null;
-				if (fullName) {
-					const nameParts = fullName.split(' ');
-					first_name = nameParts[0];
-					if (nameParts.length > 1) {
-						last_name = nameParts[nameParts.length - 1];
-					}
-				}
-
 				const credentials = {
-					username: generateFromEmail(frbRes.user.email) + new Date().toString(),
-					email: frbRes.user.email,
-					password: frbRes.user.uid,
-					first_name,
-					last_name
+					username: generateFromEmail(form.target.email.value) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')),
+					email: form.target.email.value,
+					password: form.target.password.value,
+					first_name: form.target.first_name.value || null,
+					last_name: form.target.last_name.value || null
 				};
 
 				const authRes = (await isRegister)
 					? api.post(`/auth`, credentials)
-					: api.put(`/auth`, { email: frbRes.user.email, password: frbRes.user.uid });
+					: api.put(`/auth`, credentials);
 				const userData: UserData = (await authRes).data;
 				if (!userData) {
 					throw new Error('Terjadi kesalahan. Mohon coba lagi nanti');
@@ -112,8 +77,7 @@
 
 				localStorage.setItem('userData', JSON.stringify(userData));
 				location.reload();
-			}
-		} catch (err) {
+			} catch (err) {
 			console.log(err);
 			if (err instanceof Error) {
 				alert(err.message);
@@ -146,7 +110,7 @@
 			}
 
 			const credentials = {
-				username: generateFromEmail(frbRes.user.email) + new Date().toString(),
+				username: generateFromEmail(frbRes.user.email) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')),
 				email: frbRes.user.email,
 				password: frbRes.user.uid,
 				first_name,
@@ -187,23 +151,48 @@
 		<!-- Login with email and password -->
 		<form on:submit={authWithEmail}>
 			<div class="mb-4">
-				<label for="email" class="bloc3 text-sm font-bold mb-2">Email</label>
+				<label for="email" class="text-sm font-bold mb-2">Email</label>
 				<input
 					name="email"
 					type="email"
 					id="email"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="Masukkan Email"
+          required
 				/>
 			</div>
+      {#if isRegister}
+        <div class="mb-4">
+          <label for="first_name" class="text-sm font-bold mb-2">Nama Awal</label>
+          <input
+            name="first_name"
+            type="text"
+            id="first_name"
+            class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Nama Awal"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label for="last_name" class="text-sm font-bold mb-2">Nama Awal</label>
+          <input
+            name="last_name"
+            type="text"
+            id="last_name"
+            class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Nama Akhir"
+          />
+        </div>
+      {/if}
 			<div class="mb-6">
-				<label for="password" class="bloc3 text-sm font-bold mb-2">Password</label>
+				<label for="password" class="text-sm font-bold mb-2">Password</label>
 				<input
 					name="password"
 					type={showPassword ? `text` : `password`}
 					id="password"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="******************"
+          required
 				/>
 				<div class="flex items-center my-2">
 					<label for="showPassword" class="text-sm font-bold me-2">Show Password</label>
