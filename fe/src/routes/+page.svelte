@@ -9,6 +9,7 @@
 
 	import { onMount } from 'svelte';
 	import { authStatus } from '$lib/utils/guard';
+	import Toko from '$lib/pages/toko.svelte';
 
 	$: $authStatus;
 
@@ -24,6 +25,10 @@
 		};
 	});
 
+	// Define which pages should be layouted
+	const layoutedPages = ['beranda', 'koleksi', 'riwayat', 'profile'];
+
+	// Reactive state
 	$: $sessionPage;
 </script>
 
@@ -31,7 +36,7 @@
 	{#if $sessionPage === 'landing'}
 		<Landing />
 	{:else}
-		<div class="pt-24 lg:pt-32 pb-32 lg:pb-0 lg:ps-32">
+		<div class={`${layoutedPages.includes($sessionPage) && `pt-24 lg:pt-32 pb-32 lg:pb-0 lg:ps-32`}`}>
 			<!-- Padding because fixed navbar and header would block the contents -->
 			{#if $sessionPage === 'beranda'}
 				<Beranda />
@@ -47,6 +52,10 @@
 
 			{#if $sessionPage === 'profile'}
 				<Profile />
+			{/if}
+
+			{#if $sessionPage === 'toko'}
+				<Toko />
 			{/if}
 		</div>
 	{/if}

@@ -1,28 +1,49 @@
 <script lang="ts">
-	import ProductCard from '$lib/components/product_card.svelte';
-	import type ProductData from '$lib/types/ProductData';
-	import { productData } from '$lib/types/Sample';
-	// import koleksi from '$lib/assets/koleksi.svg';
+	import ProductCard from "$lib/components/product_card.svelte";
+	import type ProductData from "$lib/types/ProductData";
+	import { api } from "$lib/utils/api";
+	import { sessionPage } from "$lib/utils/page";
+	import { AxiosError } from "axios";
+	import { onMount } from "svelte";
 
-	// import { userData } from '$lib/types/Sample';
-
-	const productDatas: ProductData[] = [
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData
-	];
+	// Get products
+	let products: ProductData[] | [] = [];
+	async function getProducts() {
+		try {
+			const productsRes = await api.get(`/product/owner/${JSON.parse(localStorage.getItem('userData') || '{}').id}`);
+			products = [...products, ...productsRes.data];
+		} catch (err) {
+			console.log(err);
+			switch (true) {
+				case err instanceof AxiosError:
+					alert(err.response?.data.message);
+					break;
+				case err instanceof Error:
+					alert(err.message);
+					break;
+				default:
+					alert('Terjadi kesalahan');
+			}
+		}
+	}
+	onMount(async () => {
+		await getProducts();
+	});
 </script>
 
-<div class={`overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
-	<!-- Desktop design -->
-	<div class="grid grid-cols-12 lg:w-[85%]">
+<header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">
+  <div class="flex justify-center items-center">
+    <button on:click={() => sessionPage.set('profile')} type="button" class="me-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+      </svg>
+    </button>
+    <h1 class="text-md font-bold">Toko Anda</h1>
+  </div>
+</header>
+
+<div class={`overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
+	<div class="grid grid-cols-12 lg:w-[90%] pt-16 lg:p-24">
 		<!-- Aside -->
 		<!-- <aside class={`hidden lg:flex flex-col items-center col-span-3 min-h-full p-4 bg-white border border-grey rounded-lg me-4`}>
       {#if productDatas[0]?.images?.[0]}
@@ -72,8 +93,8 @@
 
 			<!-- Products -->
 			<div class={`flex justify-center items-center flex-wrap max-h-full overflow-y-auto`}>
-				{#each productDatas as productData}
-					<ProductCard data={productData} />
+				{#each products as data}
+					<ProductCard data={data} />
 				{/each}
 			</div>
 		</div>

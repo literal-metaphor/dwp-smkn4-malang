@@ -253,7 +253,7 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 	</div>
 </dialog>
 
-<header class="bg-background shadow-md">
+<header class="bg-background">
 	<div class="lg:container mx-auto py-4 flex justify-between items-center">
 		<div class="flex items-center p-4">
 			<button on:click={() => location.reload()} type="button">
@@ -292,7 +292,7 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 					sessionPage.set('beranda');
 				}}
 				use:ripple
-				class="bg-french-violet text-white font-semibold px-6 py-2 rounded-md">Beranda</button
+				class="bg-french-violet text-white font-semibold px-6 py-2 me-4 rounded-md">Beranda</button
 			>
 		{/if}
 	</div>

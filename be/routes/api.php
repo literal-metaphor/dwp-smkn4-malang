@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/', [UserController::class, 'login']);
         Route::delete('/{id}', [UserController::class, 'logout']);
         Route::post('/oauth', [UserController::class, 'oauth']);
+        Route::put('/{id}/password', [UserController::class, 'changePassword']);
 
         Route::prefix('/admin')->group(function () {
             Route::put('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
@@ -54,6 +55,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{id}', [ProductController::class, 'update']);
         Route::delete('/{shop_id}/{id}', [ProductController::class, 'destroy']);
+
+        Route::get('/owner/{owner_id}', [ProductController::class, 'indexByOwner']);
 
         Route::prefix('/photo')->group(function () {
             Route::get('/{id}', [ProductController::class, 'getPhotos']);

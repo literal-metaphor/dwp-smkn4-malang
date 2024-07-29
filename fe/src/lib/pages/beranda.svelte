@@ -5,6 +5,7 @@
 	import type ProductData from '$lib/types/ProductData';
 	import { productData } from '$lib/types/Sample';
 	import { api } from '$lib/utils/api';
+	import { AxiosError } from 'axios';
 	import { onMount } from 'svelte';
 	import InfiniteScroll from 'svelte-infinite-scroll';
 	// import noimage from "$lib/assets/noimage.svg";
@@ -25,7 +26,16 @@
 			productsLastPage = productsRes.data.last_page;
 		} catch (err) {
 			console.log(err);
-			alert(err instanceof Error ? err.message : 'Terjadi kesalahan saat memuat produk.');
+			switch (true) {
+				case err instanceof AxiosError:
+					alert(err.response?.data.message);
+					break;
+				case err instanceof Error:
+					alert(err.message);
+					break;
+				default:
+					alert('Terjadi kesalahan');
+			}
 		}
 	}
 	onMount(async () => {

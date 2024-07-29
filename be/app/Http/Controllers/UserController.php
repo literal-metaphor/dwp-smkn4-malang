@@ -236,6 +236,28 @@ class UserController extends Controller
     }
 
     /**
+     * Change user's password
+     */
+    public function changePassword(Request $req, string $id) {
+        try {
+            $this->assertAuthorized($req, $id);
+            $data = $this->validateRequest($req, [
+                'old_password' => 'required|string|max:255',
+                'new_password' => 'required|string|max:255',
+            ]);
+            $user = User::findOrFail($id);
+            if (!Hash::check($data['old_password'], $user->password)) {
+                return response()->json(['message' => 'Invalid old password'], 401);
+            }
+            $user->password = Hash::make($data['password']);
+            $user->save();
+            return response()->json(['message' => 'Password changed']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Toggle a user's ban status
      */
     public function toggleBan(Request $req, string $id) {

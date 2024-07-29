@@ -58,10 +58,6 @@
 		sessionPage.subscribe(checkAuth);
 	});
 
-	// Determine user's status
-	$: isShop =
-		$authStatus && (JSON.parse(localStorage.getItem('userData') || '{}') as UserData).is_shop;
-
 	// Store sessionPage on sessionStorage
 	onMount(() => {
 		const sessionStoragePage = sessionStorage.getItem('sessionPage');
@@ -85,7 +81,7 @@
 			class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50"
 		>
 			<div class="flex justify-center items-center">
-				<button on:click={() => sessionPage.set('landing')} type="button">
+				<button on:click={() => location.reload()} type="button">
 					<img src={logo} alt="Logo" class="me-4 size-12" />
 				</button>
 				<h1 class="text-md font-bold">DWP SMKN 4 Malang</h1>
@@ -104,15 +100,11 @@
 		</header>
 
 		<footer
-			class="overflow-x-hidden w-screen h-fit lg:w-fit lg:col-span-1 lg:h-screen p-4 bg-white border border-grey flex lg:flex-col justify-center items-center fixed bottom-0"
+			class="overflow-x-hidden w-screen h-fit lg:w-fit lg:col-span-1 lg:h-screen p-4 bg-white border border-grey flex lg:flex-col justify-center items-center fixed bottom-0 z-40"
 		>
-			{#if !isShop}
-				<NavbarButton option={`beranda`} />
-				<NavbarButton option={`koleksi`} />
-				<NavbarButton option={`riwayat`} />
-			{:else}
-				<NavbarButton option={`toko`} />
-			{/if}
+			<NavbarButton option={`beranda`} />
+			<NavbarButton option={`koleksi`} />
+			<NavbarButton option={`riwayat`} />
 			<NavbarButton option={`profile`} />
 		</footer>
 	{/if}

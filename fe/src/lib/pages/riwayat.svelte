@@ -23,7 +23,7 @@
 	};
 </script>
 
-<div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
+<div class={`lg:container overflow-x-hidden flex lg:items-center flex-col w-screen h-fit p-4`}>
 	<h2 class={`text-xl ms-2 mb-2 font-bold`}>Transaksi Terakhir</h2>
 
 	<div class="flex lg:items-center w-full lg:w-[32%] h-full flex-col overflow-y-auto">
@@ -40,7 +40,7 @@
 					<p class="text-sm">
 						- {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
 							data.items.reduce((a, b) => {
-								return a + b.product.price * b.quantity;
+								return b.product ? a + b.product.price * b.quantity : a;
 							}, 0)
 						)}
 					</p>

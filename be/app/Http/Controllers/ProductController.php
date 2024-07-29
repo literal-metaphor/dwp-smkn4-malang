@@ -63,6 +63,13 @@ class ProductController extends Controller
     }
 
     /**
+     * Index products by owner
+     */
+    public function indexByOwner(string $owner_id) {
+        return response()->json(Product::where('owner_id', $owner_id)->get());
+    }
+
+    /**
      * Create a new product
      */
     public function store(Request $req) {
