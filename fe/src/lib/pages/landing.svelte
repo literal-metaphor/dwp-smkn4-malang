@@ -24,6 +24,7 @@
 	import type UserData from '$lib/types/UserData';
 	import { authStatus } from '$lib/utils/guard';
 	import { sessionPage } from '$lib/utils/page';
+	import { AxiosError } from 'axios';
 
 	// Reactive state
 	$: isRegister = true;
@@ -51,7 +52,6 @@
 
 	async function authWithEmail(e: SubmitEvent) {
 		e.preventDefault();
-		const auth = getAuth();
 
 		try {
 			const form = e as SubmitEvent & { target: HTMLFormElement }; // Type assertion to ensure e is a SubmitEvent
@@ -59,18 +59,15 @@
 			if (!form.target.email.value || !form.target.password.value) {
 				throw new Error('Email dan password harus diisi');
 			}
-				const credentials = {
-					username: generateFromEmail(form.target.email.value) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')),
-					email: form.target.email.value,
-					password: form.target.password.value,
-					first_name: form.target.first_name.value || null,
-					last_name: form.target.last_name.value || null
-				};
+				const formData = new FormData(form.target);
+				formData.set('username', generateFromEmail(form.target.email.value) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')));
+				if (!isRegister) {
+					formData.append(`_method`, 'PUT');
+				}
 
-				const authRes = (await isRegister)
-					? api.post(`/auth`, credentials)
-					: api.put(`/auth`, credentials);
-				const userData: UserData = (await authRes).data;
+				const authRes = await api.post(`/auth`, formData);
+
+				const userData: UserData = authRes.data;
 				if (!userData) {
 					throw new Error('Terjadi kesalahan. Mohon coba lagi nanti');
 				}
@@ -79,8 +76,10 @@
 				location.reload();
 			} catch (err) {
 			console.log(err);
-			if (err instanceof Error) {
-				alert(err.message);
+			if (err instanceof AxiosError) {
+				alert(err.response?.data.message);
+			} else {
+				alert(err);
 			}
 		}
 	}
@@ -127,10 +126,10 @@
 			location.reload();
 		} catch (err) {
 			console.log(err);
-			if (err instanceof Error && err.message) {
-				alert(err.message);
+			if (err instanceof AxiosError) {
+				alert(err.response?.data.message);
 			} else {
-				alert('Terjadi kesalahan. Mohon coba lagi nanti');
+				alert(err);
 			}
 		}
 	}
@@ -161,29 +160,29 @@
           required
 				/>
 			</div>
-      {#if isRegister}
-        <div class="mb-4">
-          <label for="first_name" class="text-sm font-bold mb-2">Nama Awal</label>
-          <input
-            name="first_name"
-            type="text"
-            id="first_name"
-            class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Nama Awal"
-            required
-          />
-        </div>
-        <div class="mb-4">
-          <label for="last_name" class="text-sm font-bold mb-2">Nama Awal</label>
-          <input
-            name="last_name"
-            type="text"
-            id="last_name"
-            class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-            placeholder="Nama Akhir"
-          />
-        </div>
-      {/if}
+			<div class={`mb-4 ${!isRegister && `hidden`}`}>
+				<label for="first_name" class="text-sm font-bold mb-2">Nama Awal</label>
+				<input
+					name="first_name"
+					type="text"
+					id="first_name"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="Nama Awal"
+					value="Nama Awal"
+					required
+				/>
+			</div>
+			<div class={`mb-4 ${!isRegister && `hidden`}`}>
+				<label for="last_name" class="text-sm font-bold mb-2">Nama Awal</label>
+				<input
+					name="last_name"
+					type="text"
+					id="last_name"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="Nama Akhir"
+					value="Nama Akhir"
+				/>
+			</div>
 			<div class="mb-6">
 				<label for="password" class="text-sm font-bold mb-2">Password</label>
 				<input
