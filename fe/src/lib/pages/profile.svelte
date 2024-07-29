@@ -18,7 +18,32 @@
 	import type UserData from '$lib/types/UserData';
 	import { sessionPage } from '$lib/utils/page';
 	import { AxiosError } from 'axios';
-	import { api } from '$lib/utils/api';
+	import { api, store } from '$lib/utils/api';
+	import { onMount } from 'svelte';
+
+	async function getAvatar(id: string) {
+		try {
+			if (!parsedUserData.avatar_id) return;
+			const avatarRes = await api.get(`/user/avatar/${id}`);
+			parsedUserData.avatar = avatarRes.data;
+		} catch (err) {
+			console.log(err);
+			switch (true) {
+				case err instanceof AxiosError:
+					alert(err.response?.data.message);
+					break;
+				case err instanceof Error:
+					alert(err.message);
+					break;
+				default:
+					alert('Terjadi kesalahan');
+			}
+		}
+	}
+
+	onMount(async () => {
+		await getAvatar(parsedUserData.id);
+	});
 
 	// Determine user's status
 	$: isShop = (JSON.parse(localStorage.getItem('userData') || '{}') as UserData).is_shop;
@@ -63,11 +88,42 @@
 			}
 		}
 	}
+
+	async function handleImageUpload(e: Event) {
+		try {
+			const target = e.target as HTMLInputElement;
+			const file = target.files?.[0];
+			if (!file) {
+				throw new Error('File tidak ditemukan');
+			}
+
+			const formData = new FormData();
+			formData.append('file', file);
+			const res = await api.post(`/user/avatar/${parsedUserData.id}`, formData, { headers: { Authorization: `Bearer ${parsedUserData.remember_token}` } });
+
+			localStorage.setItem('userData', JSON.stringify({ ...parsedUserData, avatar_id: res.data.id, avatar: res.data }));
+
+			alert("Avatar berhasil diperbarui");
+			location.reload();
+		} catch (err) {
+			console.log(err);
+			switch (true) {
+				case err instanceof AxiosError:
+					alert(err.response?.data.message);
+					break;
+				case err instanceof Error:
+					alert(err.message);
+					break;
+				default:
+					alert('Terjadi kesalahan');
+			}
+		}
+	}
 </script>
 
 <dialog id="password_modal" class="daisy-modal">
 	<div class="daisy-modal-box">
-		<h3 class="text-lg font-bold">Daftar</h3>
+		<h3 class="text-lg font-bold">Ubah Password</h3>
 
 		<form on:submit={changePassword}>
 			<div class="mb-4">
@@ -107,7 +163,7 @@
 				type="submit"
 				use:ripple
 				class="bg-french-violet text-white font-bold
-				py-2 px-4 rounded focus:outline-none focus:shadow-outline">Ubah kata sandi</button
+				py-2 px-4 rounded focus:outline-none focus:shadow-outline">Ubah Password</button
 			>
 		</form>
 
@@ -148,7 +204,10 @@
 	<div
 		class={`flex justify-start items-center w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}
 	>
-		<img src={parsedUserData.avatar || userPlaceholder} alt="Profile" class="size-12 me-4" />
+		<label use:ripple for="avatar" class="hover:cursor-pointer rounded-full me-4">
+			<input type="file" name="avatar" id="avatar" on:change={handleImageUpload} class="hidden">
+			<img src={parsedUserData.avatar ? store + parsedUserData.avatar.filename : userPlaceholder} alt="Profile" class="size-12 rounded-full" />
+		</label>
 		<div class="flex flex-col items-start">
 			<p class="text-md font-semibold">
 				{parsedUserData.first_name + ' ' + (parsedUserData.last_name || '')} (<span class="text-blue">@{parsedUserData.username}</span>)
@@ -163,7 +222,7 @@
 	>
 			{#each [
 				{ icon: tokoBtn, label: 'Toko Anda', condition: isShop, callback: () => $sessionPage = 'toko' },
-				{ icon: securityBtn, label: 'Ubah Kata Sandi', condition: true, callback: () => openModal('password_modal') },
+				{ icon: securityBtn, label: 'Ubah Password', condition: true, callback: () => openModal('password_modal') },
 				{ icon: callBtn, label: 'Kontak Admin', condition: true, callback: () => { window.open('https://wa.me/number'); return; } },
 				{ icon: tosBtn, label: 'Ketentuan Layanan', condition: true, callback: () => openModal('tos_modal') },
 			] as item}

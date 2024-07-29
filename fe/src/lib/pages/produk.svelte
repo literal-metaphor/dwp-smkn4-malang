@@ -17,6 +17,7 @@
 	import { AxiosError } from "axios";
 	import { api, store } from "$lib/utils/api";
 	import { onMount } from "svelte";
+	import type UserData from "$lib/types/UserData";
 
   const userId = JSON.parse(localStorage.getItem('userData') || '{}').id;
 
@@ -73,7 +74,12 @@
   async function getOwner() {
     try {
       const ownerRes = await api.get(`/user/${product.owner_id}`);
-      product.owner = ownerRes.data;
+      let ownerData: UserData = ownerRes.data;
+      if (ownerData && ownerData.avatar_id) {
+        const avatarRes = await api.get(`/user/avatar/${ownerData.id}`);
+        ownerData.avatar = avatarRes.data;
+      }
+      product.owner = ownerData;
     } catch (err) {
       handleError(err);
     }
@@ -389,9 +395,9 @@
       <!-- Shop Details -->
       <div class="mt-8 border-t pt-4">
         <h2 class="m-2 font-medium text-xl">Penjual:</h2>
-          <div class="flex items-center">
-              <img src={product.owner?.avatar ? product.owner.avatar : userPlaceholder} alt="Shop" class="w-12 h-12 rounded-full">
-              <span class="ml-2 text-lg font-bold">{product.owner ? "@"+product.owner.username : `Loading...`}</span>
+          <div class="flex items-center space-x-4">
+              <img src={product.owner?.avatar ? store + product.owner.avatar.filename : userPlaceholder} alt="Shop" class="w-12 h-12 rounded-full">
+              <span class="ml-2 text-lg font-bold text-blue">{product.owner ? "@"+product.owner.username : `Loading...`}</span>
           </div>
       </div>
 
