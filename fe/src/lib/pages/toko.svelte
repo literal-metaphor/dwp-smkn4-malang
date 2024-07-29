@@ -69,7 +69,6 @@
 		const formData = new FormData(e.target as HTMLFormElement);
 		formData.append('owner_id', JSON.parse(localStorage.getItem('userData') || '{}').id);
 		formData.set('price', actualPrice.toFixed(0));
-		console.log(formData.get("price"));
 
 		// formData.set('price', parseInt(price.replace(/[^0-9.-]+/g, "")).toFixed(2));
 

@@ -109,6 +109,7 @@ class ProductController extends Controller
     public function destroy(Request $req, string $id) {
         try {
             $this->assertAuthorized($req);
+            Product::findOrFail($id)->delete();
             return response()->json(['message' => 'Product deleted']);
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -160,18 +161,20 @@ class ProductController extends Controller
     /**
      * Delete a photo from a product
      */
-    public function deletePhoto(Request $req, string $id, string $photo_id) {
+    public function deletePhoto(Request $req, string $id,) {
         try {
             $this->assertAuthorized($req);
 
             // Check if the product exists
             Product::findOrFail($id);
+            $photos = ProductPhoto::where('product_id', $id)->get();
+            $files = File::whereIn('id', $photos->pluck('photo_id'))->get();
 
-            $file = File::findOrFail($photo_id); // For some reason, File::findOrFail doesn't work. It doesn't stop even though the file doesn't exist. But it works, so let's just roll with it.
-
-            $this->deleteFile($file->filename);
-
-            $file->delete();
+            foreach ($files as &$file) {
+                $this->deleteFile($file->filename);
+                $file->delete();
+            }
+            unset($file);
 
             return response()->json(['message' => 'Photo deleted']);
         } catch (\Throwable $e) {

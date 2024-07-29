@@ -11,6 +11,7 @@
 	import { authStatus } from '$lib/utils/guard';
 	import Toko from '$lib/pages/toko.svelte';
 	import Produk from '$lib/pages/produk.svelte';
+	import Troli from '$lib/pages/troli.svelte';
 
 	$: $authStatus;
 
@@ -57,6 +58,10 @@
 
 			{#if $sessionPage === 'produk'}
 				<Produk />
+			{/if}
+
+			{#if $sessionPage === 'troli'}
+				<Troli />
 			{/if}
 
 			{#if $sessionPage === 'toko'}

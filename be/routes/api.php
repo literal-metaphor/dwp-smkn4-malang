@@ -61,7 +61,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('/photo')->group(function () {
             Route::get('/{id}', [ProductController::class, 'getPhotos']);
             Route::post('/{id}', [ProductController::class, 'addPhoto']);
-            Route::delete('/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
+            Route::delete('/{id}', [ProductController::class, 'deletePhoto']);
         });
 
         Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
