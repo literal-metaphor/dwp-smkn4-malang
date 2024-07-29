@@ -151,7 +151,7 @@
 		<img src={parsedUserData.avatar || userPlaceholder} alt="Profile" class="size-12 me-4" />
 		<div class="flex flex-col items-start">
 			<p class="text-md font-semibold">
-				{parsedUserData.first_name + ' ' + (parsedUserData.last_name || '')}
+				{parsedUserData.first_name + ' ' + (parsedUserData.last_name || '')} (<span class="text-blue">@{parsedUserData.username}</span>)
 			</p>
 			<p class="text-sm opacity-50">{parsedUserData.email}</p>
 		</div>

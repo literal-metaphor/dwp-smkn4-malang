@@ -60,7 +60,7 @@
 				throw new Error('Email dan password harus diisi');
 			}
 				const formData = new FormData(form.target);
-				formData.set('username', generateFromEmail(form.target.email.value) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')));
+				formData.set('username', generateFromEmail(form.target.email.value) + ((Math.floor(Math.random() * 9999))).toString());
 				if (!isRegister) {
 					formData.append(`_method`, 'PUT');
 				}
@@ -109,7 +109,7 @@
 			}
 
 			const credentials = {
-				username: generateFromEmail(frbRes.user.email) + (new Date().toString().replace(/[^a-zA-Z0-9-_]/g, '')),
+				username: generateFromEmail(frbRes.user.email) + ((Math.floor(Math.random() * 9999))).toString(),
 				email: frbRes.user.email,
 				password: frbRes.user.uid,
 				first_name,

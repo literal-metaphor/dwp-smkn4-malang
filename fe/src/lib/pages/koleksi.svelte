@@ -2,22 +2,31 @@
 	import ProductCard from '$lib/components/product_card.svelte';
 	import type ProductData from '$lib/types/ProductData';
 	import { productData } from '$lib/types/Sample';
+	import type { WishlistData } from '$lib/types/WishlistData';
+	import { api } from '$lib/utils/api';
+	import { onMount } from 'svelte';
 	// import koleksi from '$lib/assets/koleksi.svg';
 
 	// import { userData } from '$lib/types/Sample';
 
-	const productDatas: ProductData[] = [
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData,
-		productData
-	];
+	$: message = "Memuat...";
+
+	let products: ProductData[] | [] = [];
+	onMount(async () => {
+		const res = await api.get(`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}`);
+		const wishlists = res.data as WishlistData[];
+
+		if (wishlists.length < 1) {
+			message = "Tidak ada produk favorit";
+		}
+
+		const promises = wishlists.map(async (product) => {
+				const res = await api.get(`/product/${product.product_id}`);
+				return res.data;
+		});
+
+		products = await Promise.all(promises);
+	})
 </script>
 
 <div class={`overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
@@ -72,9 +81,13 @@
 
 			<!-- Products -->
 			<div class={`flex justify-center items-center flex-wrap max-h-full overflow-y-auto`}>
-				{#each productDatas as productData}
-					<ProductCard data={productData} />
-				{/each}
+				{#if products.length > 0}
+					{#each products as productData}
+						<ProductCard data={productData} />
+					{/each}
+				{:else}
+					<p class="text-lg font-bold text-center">{message}</p>
+				{/if}
 			</div>
 		</div>
 	</div>
