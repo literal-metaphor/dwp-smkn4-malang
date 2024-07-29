@@ -82,4 +82,15 @@ class RatingController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Get rating by user
+     */
+    public function getRatingByUser(Request $req, string $product_id) {
+        try {
+            return response()->json(Rating::where('user_id', User::where('remember_token', $req->bearerToken())->first()->id)->where('product_id', $product_id)->first());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
 }

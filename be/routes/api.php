@@ -65,6 +65,8 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
+        Route::get('/wishlist/{user_id}', [ProductController::class, 'getWishlist']);
+        Route::get('/wishlist/{user_id}/{id}', [ProductController::class, 'isWishlist']);
     });
 
     // * Transaction Routes
@@ -87,6 +89,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [RatingController::class, 'store']);
         // Route::put('/{id}', [RatingController::class, 'update']); // Combined with store
         Route::delete('/{id}', [RatingController::class, 'destroy']);
+
+        Route::get('/user/{product_id}', [RatingController::class, 'getRatingByUser']);
     });
 
     // * Comment Routes

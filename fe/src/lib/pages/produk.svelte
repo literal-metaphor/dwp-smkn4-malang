@@ -4,30 +4,140 @@
 	import type { CommentData } from "$lib/types/CommentData";
 	import type ProductData from "$lib/types/ProductData";
 	import type { RatingData } from "$lib/types/RatingData";
-  import { productData, ratingData, commentData } from "$lib/types/Sample";
+  // import { productData, ratingData, commentData } from "$lib/types/Sample";
   import heart from "$lib/assets/heart.svg";
   import heartfill from "$lib/assets/heartfill.svg";
   import star from "$lib/assets/star.svg";
   import starfill from "$lib/assets/starfill.svg";
   import pen from "$lib/assets/pen.svg";
+  import userPlaceholder from "$lib/assets/profile.svg";
 
 	import { ripple } from "svelte-ripple-action";
 	import { sessionPage } from "$lib/utils/page";
+	import { AxiosError } from "axios";
+	import { api, store } from "$lib/utils/api";
+	import { onMount } from "svelte";
+
+  const userId = JSON.parse(sessionStorage.getItem('user') || '{}').id;
 
   $: isFavorite = false;
   $: quantity = 1;
   $: yourRating = 0;
 
-  const userId = JSON.parse(sessionStorage.getItem('user') || '{}').id;
+  // Data
+  let product: ProductData = JSON.parse(sessionStorage.getItem('product') || '{}') as ProductData;
 
-  // Sample
-  const product: ProductData = productData;
-  const ratings: RatingData[] = [ ratingData, ratingData, ratingData, ratingData, ratingData, ratingData, ratingData, ratingData, ratingData, ratingData ];
-  const comments: CommentData[] = [ commentData, commentData, commentData, commentData, commentData, commentData, commentData, commentData, commentData, commentData ];
+  // Get reviews
+  let ratings: RatingData[] | [] = [];
+  let comments: CommentData[] | [] = [];
+  // Helper function to handle errors
+  function handleError(err: any) {
+    console.log(err);
+    switch (true) {
+      case err instanceof AxiosError:
+        alert(err.response?.data.message);
+        break;
+      case err instanceof Error:
+        alert(err.message);
+        break;
+      default:
+        alert('Terjadi kesalahan');
+    }
+  }
+
+  // Get reviews
+  async function getReviews() {
+    try {
+      const ratingsRes = await api.get(`/rating/product/${product.id}`);
+      ratings = ratingsRes.data;
+
+      const commentsRes = await api.get(`/comment/product/${product.id}`);
+      comments = commentsRes.data;
+
+      // Get user for each comment
+      comments = await Promise.all(
+        comments.map(async (comment) => {
+          const userRes = await api.get(`/user/${comment.user_id}`);
+          comment.user = userRes.data;
+          return comment;
+        })
+      );
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  // Get owner
+  async function getOwner() {
+    try {
+      const ownerRes = await api.get(`/user/${product.owner_id}`);
+      product.owner = ownerRes.data;
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  // Get favorited status
+  async function getFavoritedStatus() {
+    try {
+      const res = await api.get(`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}/${product.id}`);
+      isFavorite = res.data;
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  // Get your rating
+  async function getYourRating() {
+    try {
+      const res = await api.get(`/rating/user/${product.id}`, { headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem('userData') || '{}').remember_token}` } });
+      yourRating = parseInt(res.data.rating) as 1 | 2 | 3 | 4 | 5;
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  onMount(async () => {
+    try {
+      await Promise.all([getReviews(), getOwner(), getFavoritedStatus(), getYourRating()]);
+    } catch (err) {
+      handleError(err);
+    }
+  });
 
   // Functions
   async function toggleFavorite() {
-    isFavorite = !isFavorite;
+    try {
+      const res = await api.post(`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}/${product.id}`);
+      if (res.status.toString().startsWith('2')) {
+        await getFavoritedStatus();
+      }
+    } catch (err) {
+      handleError(err);
+    }
+  }
+  async function rateProduct(newRating: number) {
+    try {
+      const res = await api.post(`/rating`, { product_id: product.id, rating: newRating }, { headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem('userData') || '{}').remember_token}` } });
+      yourRating = parseInt(res.data.rating) as 1 | 2 | 3 | 4 | 5;
+    } catch (err) {
+      handleError(err);
+    }
+  }
+  async function submitComment(e: SubmitEvent) {
+    e.preventDefault();
+
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      formData.append('product_id', product.id);
+      const res = await api.post(`/comment`, formData, { headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem('userData') || '{}').remember_token}` } });
+      console.log(res);
+      if (res.status.toString().startsWith('2')) {
+        getReviews();
+      }
+    } catch (err) {
+      handleError(err);
+    }
   }
 
 </script>
@@ -56,7 +166,7 @@
 <div class="mx-auto px-4 pt-32 flex flex-col lg:flex-row space-x-4">
   <!-- Left part: Product Image -->
   <div class="lg:w-1/2">
-      <img src={noimage} alt="Product" class="w-full h-auto mb-8">
+      <img src={product.images && product.images.length > 0 ? store + product.images[0] : noimage} alt="Product" class="w-full h-auto mb-8">
   </div>
 
   <!-- Right part: Product Details -->
@@ -65,7 +175,7 @@
       <h1 class="text-3xl font-bold">{product.name}</h1>
       <div class="flex items-center">
         <!-- <img src={starfill} alt="Review star icon" class="size-4 me-2"> -->
-        <span>⭐ {ratings.reduce((a, b) => a + b.rating, 0) / ratings.length} ({ratings.length} ulasan)</span>
+        <span>⭐ {ratings && ratings.length > 0 ? ratings.reduce((a, b) => a + b.rating, 0) / ratings.length : `0`} ({ratings.length} ulasan)</span>
       </div>
       <p class="text-xl font-bold mt-2">
         {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
@@ -86,8 +196,8 @@
       <div class="mt-8 border-t pt-4">
         <h2 class="m-2 font-medium text-xl">Penjual:</h2>
           <div class="flex items-center">
-              <img src={product.owner?.avatar ? product.owner.avatar : noimage} alt="Shop" class="w-12 h-12 rounded-full">
-              <span class="ml-2 text-lg font-bold">{product.owner && product.owner.username}</span>
+              <img src={product.owner?.avatar ? product.owner.avatar : userPlaceholder} alt="Shop" class="w-12 h-12 rounded-full">
+              <span class="ml-2 text-lg font-bold">{product.owner ? product.owner.username: `Loading...`}</span>
           </div>
       </div>
 
@@ -99,7 +209,7 @@
           <div class="flex mt-2">
               <!-- Replace the following with your star rating component -->
             {#each Array(5) as _, i}
-              <button use:ripple class="size-8 p-2 rounded-full" on:click={() => yourRating = i + 1} type="button">
+              <button use:ripple class="size-8 p-2 rounded-full" on:click={() => { rateProduct(i + 1) }} type="button">
                 <img src={i < yourRating ? starfill : star} alt="Rating indicator icon" class="size-full">
               </button>
             {/each}
@@ -107,9 +217,9 @@
           </div>
 
           <!-- Comment Input -->
-          <form on:submit={(e) => e.preventDefault()}>
-            <textarea class="mt-4 w-full p-2 border rounded" placeholder="Tuliskan komentarmu di sini..."></textarea>
-            <div class="flex items-center justify-start space-x-4">
+          <form on:submit={submitComment}>
+            <textarea name="content" class="mt-4 w-full p-2 border rounded" placeholder="Tuliskan komentarmu di sini..."></textarea>
+            <div class="flex items-center justify-start space-x-4 mt-2">
               <button
                 type="submit"
                 use:ripple
@@ -131,7 +241,7 @@
                <!-- data because comment is currently used in PostCSS -->
                 <div class="border-t py-2">
                     <!-- <p class="font-bold">@{data.user && data.user.username} - {Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24))} days ago</p> -->
-                    <p class="font-bold">@{data.user && data.user.username} - {(() => { const days = Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24)); return days > 365 ? `${Math.floor(days / 365)} year${Math.floor(days / 365) > 1 ? 's' : ''} ago` : days > 30 ? `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago` : `${days} day${days > 1 ? 's' : ''} ago`; })()}</p>
+                    <p class="font-bold"><span class="text-blue">@{data.user && data.user.username}</span> - {(() => { const days = Math.floor((new Date().getTime() - new Date(data.created_at).getTime()) / (1000 * 3600 * 24)); return days > 365 ? `${Math.floor(days / 365)} year${Math.floor(days / 365) > 1 ? 's' : ''} ago` : days > 30 ? `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago` : `${days} day${days > 1 ? 's' : ''} ago`; })()}</p>
                     <p>{data.content}</p>
                 </div>
               {/each}

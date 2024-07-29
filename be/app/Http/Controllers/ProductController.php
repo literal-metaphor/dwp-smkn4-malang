@@ -199,4 +199,26 @@ class ProductController extends Controller
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Get wishlists of a user
+     */
+    public function getWishlist(Request $req, string $user_id) {
+        try {
+            return response()->json(Wishlist::where('user_id', $user_id)->get());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Check if a product is wishlist of a user
+     */
+    public function isWishlist(Request $req, string $user_id, string $id) {
+        try {
+            return response()->json(Wishlist::where('user_id', $user_id)->where('product_id', $id)->exists());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
 }
