@@ -17,7 +17,6 @@
 	import { AxiosError } from "axios";
 	import { api, store } from "$lib/utils/api";
 	import { onMount } from "svelte";
-	import { error } from "@sveltejs/kit";
 
   const userId = JSON.parse(localStorage.getItem('userData') || '{}').id;
 
