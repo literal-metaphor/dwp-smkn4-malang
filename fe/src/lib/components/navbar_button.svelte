@@ -1,15 +1,26 @@
 <script lang="ts">
-  import { sessionPage } from '$lib/utils/page';
+	import { sessionPage } from '$lib/utils/page';
 
-  export let option: string;
-  const options: string[] = ["beranda", "koleksi", "riwayat", "profile"];
+	export let option: string;
+	const options: string[] = ['beranda', 'koleksi', 'riwayat', 'profile'];
 
-  $: isActive = $sessionPage === option;
+	$: isActive = $sessionPage === option;
 
-  import { ripple } from 'svelte-ripple-action';
+	import { ripple } from 'svelte-ripple-action';
 </script>
 
-<button use:ripple class={`rounded-full size-16 p-4 m-2 ${isActive ? `bg-french-violet text-white`: ``} flex justify-center items-center flex-col transition duration-300`} on:click={() => { sessionPage.set(option); window.scrollTo(0, 0); }}>
-  <img src={options.includes(option) ? `/src/lib/assets/${option}${isActive ? `active` : ``}.svg` : ``} alt={option} class="size-6 mb-1">
-  <p class="text-sm">{option.charAt(0).toUpperCase() + option.slice(1)}</p>
+<button
+	use:ripple
+	class={`rounded-full size-16 p-4 m-2 ${isActive ? `bg-french-violet text-white` : ``} flex justify-center items-center flex-col transition duration-300`}
+	on:click={() => {
+		sessionPage.set(option);
+		window.scrollTo(0, 0);
+	}}
+>
+	<img
+		src={options.includes(option) ? `/src/lib/assets/${option}${isActive ? `active` : ``}.svg` : ``}
+		alt={option}
+		class="size-6 mb-1"
+	/>
+	<p class="text-sm">{option.charAt(0).toUpperCase() + option.slice(1)}</p>
 </button>
