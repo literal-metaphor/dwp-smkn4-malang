@@ -10,6 +10,7 @@
 	import { onMount } from 'svelte';
 	import { authStatus } from '$lib/utils/guard';
 	import Toko from '$lib/pages/toko.svelte';
+	import Produk from '$lib/pages/produk.svelte';
 
 	$: $authStatus;
 
@@ -52,6 +53,10 @@
 
 			{#if $sessionPage === 'profile'}
 				<Profile />
+			{/if}
+
+			{#if $sessionPage === 'produk'}
+				<Produk />
 			{/if}
 
 			{#if $sessionPage === 'toko'}

@@ -5,6 +5,7 @@
 	import { sessionPage } from "$lib/utils/page";
 	import { AxiosError } from "axios";
 	import { onMount } from "svelte";
+	import { ripple } from "svelte-ripple-action";
 
 	// Get products
 	let products: ProductData[] | [] = [];
@@ -29,7 +30,161 @@
 	onMount(async () => {
 		await getProducts();
 	});
+
+	// Functions
+
+	// Format currency on create product form
+	let price: string = "";
+	let actualPrice: number = 0;
+	function formatPrice(e: Event) {
+		const target = e.target as HTMLInputElement;
+		let formattedVal = target.value.replace(/[^0-9]/g, '');
+		if (formattedVal.length > 6) formattedVal = formattedVal.slice(0, 6); // max 6 digits
+		const parsedVal = Number(formattedVal);
+		actualPrice = parsedVal <= 999999 ? parsedVal : 999999;
+		actualPrice = Number(formattedVal);
+		price = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(Number(formattedVal));
+	}
+
+	function openCreateProductModal() {
+		const element = document.getElementById('create_product_modal') as HTMLDialogElement;
+		element.showModal();
+	}
+
+	function handleImageUpload(e: Event) {
+		const target = e.target as HTMLInputElement;
+		const file = target.files?.[0];
+		if (!file) return;
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = (e) => {
+			const element = document.getElementById('preview') as HTMLImageElement;
+			element.src = e.target?.result as string;
+		};
+	}
+
+	function createProduct(e: SubmitEvent) {
+		e.preventDefault();
+
+		const formData = new FormData(e.target as HTMLFormElement);
+		formData.append('owner_id', JSON.parse(localStorage.getItem('userData') || '{}').id);
+		formData.set('price', actualPrice.toFixed(0));
+		console.log(formData.get("price"));
+
+		// formData.set('price', parseInt(price.replace(/[^0-9.-]+/g, "")).toFixed(2));
+
+		api.post('/product', formData)
+			.then((res) => {
+				alert("Produk berhasil dibuat");
+
+				// Upload photo too
+				const fileFormData = new FormData();
+				const file = formData.get('image') as File;
+				fileFormData.append('file', file);
+				api.post(`/product/photo/${res.data.id}`, fileFormData)
+					.then((res) => {
+						alert("Foto berhasil diupload")
+
+						location.reload(); // Fin
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+				switch (true) {
+					case err instanceof AxiosError:
+						alert(err.response?.data.message);
+						break;
+					case err instanceof Error:
+						alert(err.message);
+						break;
+					default:
+						alert('Terjadi kesalahan');
+				}
+			});
+	}
 </script>
+
+<dialog id="create_product_modal" class="daisy-modal">
+	<div class="daisy-modal-box">
+		<h3 class="text-lg font-bold">Buat Produk Baru</h3>
+
+		<form on:submit={createProduct}>
+			<div class="mb-4">
+				<label for="name" class="text-sm font-bold mb-2">Nama Produk</label>
+				<input
+					name="name"
+					type="text"
+					id="name"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="(Wajib)"
+          required
+				/>
+			</div>
+			<div class="mb-4">
+				<label for="description" class="text-sm font-bold mb-2">Deskripsi</label>
+				<textarea
+					name="description"
+					id="description"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="(Opsional)"
+				/>
+			</div>
+			<div class="mb-4">
+				<label for="price" class="text-sm font-bold mb-2">Harga</label>
+				<input
+						name="price"
+						bind:value={price}
+						on:change={formatPrice}
+						type="text"
+						id="price"
+						class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+						placeholder="(Wajib)"
+				/>
+			</div>
+			<div class="mb-4">
+				<label for="category" class="text-sm font-bold mb-2">Kategori</label>
+				<select
+					name="category"
+					id="category"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+          required
+				>
+						<option selected value="food">Makanan</option>
+						<option value="drink">Minuman</option>
+						<option value="female_fashion">Fashion Wanita</option>
+						<option value="male_fashion">Fashion Pria</option>
+						<option value="child_fashion">Fashion Anak</option>
+						<option value="furniture">Perabotan</option>
+					</select>
+			</div>
+			<div class="mb-4">
+				<label for="image" class="text-sm font-bold mb-2">Gambar</label>
+				<img id="preview" class="size-32 my-2" src="https://placehold.co/600x400?text=Belum\nAda\nGambar" alt="Preview" />
+				<input
+						on:change={handleImageUpload}
+						name="image"
+						type="file"
+						id="image"
+						class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+						placeholder="(Opsional)"
+				/>
+			</div>
+			<button
+				type="submit"
+				use:ripple
+				class="bg-french-violet text-white font-bold
+				py-2 px-4 rounded focus:outline-none focus:shadow-outline">Unggah Produk</button
+			>
+		</form>
+
+		<form method="dialog">
+			<button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+		</form>
+	</div>
+</dialog>
 
 <header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">
   <div class="flex justify-center items-center">
@@ -89,7 +244,17 @@
 				/>
 			</div>
 
-			<br />
+			<br>
+
+			<div class="flex w-full items-center justify-center space-x-4 px-2">
+				<button
+					on:click={openCreateProductModal}
+					use:ripple
+					class="bg-french-violet w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Buat Produk Baru</button
+				>
+			</div>
+
+			<br>
 
 			<!-- Products -->
 			<div class={`flex justify-center items-center flex-wrap max-h-full overflow-y-auto`}>

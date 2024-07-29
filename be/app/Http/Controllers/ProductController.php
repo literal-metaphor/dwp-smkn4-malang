@@ -106,7 +106,7 @@ class ProductController extends Controller
     /**
      * Delete a product
      */
-    public function destroy(Request $req, string $shop_id, string $id) {
+    public function destroy(Request $req, string $id) {
         try {
             $this->assertAuthorized($req);
             return response()->json(['message' => 'Product deleted']);
@@ -127,7 +127,7 @@ class ProductController extends Controller
     /**
      * Add photo to a product
      */
-    public function addPhoto(Request $req, string $shop_id, string $id) {
+    public function addPhoto(Request $req, string $id) {
         try {
             $this->assertAuthorized($req);
 
@@ -160,7 +160,7 @@ class ProductController extends Controller
     /**
      * Delete a photo from a product
      */
-    public function deletePhoto(Request $req, string $shop_id, string $id, string $photo_id) {
+    public function deletePhoto(Request $req, string $id, string $photo_id) {
         try {
             $this->assertAuthorized($req);
 

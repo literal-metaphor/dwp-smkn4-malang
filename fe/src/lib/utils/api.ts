@@ -8,4 +8,4 @@ export const api = axios.create({
 	}
 });
 
-export const store = 'http://localhost:8000/storage/uploads';
+export const store = 'http://localhost:8000/storage/uploads/';

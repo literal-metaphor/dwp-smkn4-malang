@@ -26,7 +26,7 @@
 </script>
 
 <div class="relative">
-	<div class="overflow-hidden relative w-[30vw] h-[40vw] rounded-lg">
+	<div class="overflow-hidden relative rounded-lg">
 		{#each items as item, index}
 			<div
 				class="absolute inset-0 transition-transform duration-700 ease-in-out transform {current ===

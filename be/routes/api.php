@@ -54,14 +54,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}', [ProductController::class, 'show']);
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{id}', [ProductController::class, 'update']);
-        Route::delete('/{shop_id}/{id}', [ProductController::class, 'destroy']);
+        Route::delete('/{id}', [ProductController::class, 'destroy']);
 
         Route::get('/owner/{owner_id}', [ProductController::class, 'indexByOwner']);
 
         Route::prefix('/photo')->group(function () {
             Route::get('/{id}', [ProductController::class, 'getPhotos']);
-            Route::post('/{shop_id}/{id}', [ProductController::class, 'addPhoto']);
-            Route::delete('/{shop_id}/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
+            Route::post('/{id}', [ProductController::class, 'addPhoto']);
+            Route::delete('/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
         });
 
         Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
