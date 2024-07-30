@@ -89,7 +89,9 @@
 			<button
 				use:ripple
 				class="{`rounded-full size-12 ms-8 p-3 mx-1 ${$sessionPage === 'troli' ? `bg-french-violet text-white` : ``} flex justify-center items-center active:scale-90 transition duration-300`}}"
-				on:click={() => sessionPage.set('troli')}
+				on:click={() => {
+					setTimeout(() => sessionPage.set('troli'), 250)
+				}}
 			>
 				{#if $sessionPage === 'troli'}
 					<img src={troliactive} alt="Troli" class="size-12" />

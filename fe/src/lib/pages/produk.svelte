@@ -18,6 +18,7 @@
 	import { api, store } from "$lib/utils/api";
 	import { onMount } from "svelte";
 	import type UserData from "$lib/types/UserData";
+	import type TrolleyItem from "$lib/types/TrolleyItem";
 
   const userId = JSON.parse(localStorage.getItem('userData') || '{}').id;
 
@@ -121,6 +122,24 @@
   });
 
   // Functions
+  async function addToCart() {
+    try {
+      let carts = JSON.parse(sessionStorage.getItem('cart') || '[]') as TrolleyItem[];
+      if (carts && carts.length > 0) {
+        if (carts.some((item) => item.product.id === product.id)) throw new Error('Produk ini sudah ada di keranjang belanja');
+      }
+      if (!product.owner) throw new Error('Mohon tunggu proses loading selesai');
+      carts.push({
+        owner: product.owner,
+        product: product,
+        quantity: quantity
+      });
+      sessionStorage.setItem('cart', JSON.stringify(carts));
+      alert("Produk ditambahkan ke keranjang belanja");
+    } catch (err) {
+      handleError(err);
+    }
+  }
   async function toggleFavorite() {
     try {
       const res = await api.post(`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}/${product.id}`);
@@ -373,7 +392,7 @@
         <h1 class="text-3xl font-bold">{product.name}</h1>
         <div class="flex items-center">
           <!-- <img src={starfill} alt="Review star icon" class="size-4 me-2"> -->
-          <span>⭐ {ratings && ratings.length > 0 ? ratings.reduce((a, b) => a + b.rating, 0) / ratings.length / 5 : `0`} ({ratings.length} ulasan)</span>
+          <span>⭐ {ratings && ratings.length > 0 ? (ratings.reduce((a, b) => a + b.rating, 0) / ratings.length / 5) * 100 + "%" : `0%`} ({ratings.length} ulasan)</span>
         </div>
         <p class="text-xl font-bold mt-2">
           {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.price)}
@@ -388,7 +407,7 @@
             <button use:ripple on:click={() => quantity > 1 && quantity--} class="bg-french-violet text-white font-bold py-2 px-4 rounded-l">-</button>
             <span class="mx-2">{quantity}</span>
             <button use:ripple on:click={() => quantity++} class="bg-french-violet text-white font-bold py-2 px-4 rounded-r">+</button>
-            <button use:ripple class="bg-french-violet text-white font-bold py-2 px-4 rounded ml-4">🛒 Tambahkan ke Troli</button>
+            <button on:click={() => addToCart()} use:ripple class="bg-french-violet text-white font-bold py-2 px-4 rounded ml-4">🛒 Tambahkan ke Troli</button>
         </div>
       {/if}
 

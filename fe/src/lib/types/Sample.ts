@@ -3,6 +3,7 @@ import type ProductData from './ProductData';
 import type { RatingData } from './RatingData';
 import type TransactionData from './TransactionData';
 import type TransactionItemData from './TransactionItemData';
+import type TrolleyItem from './TrolleyItem';
 import type UserData from './UserData';
 
 export const userData: UserData = {
@@ -12,6 +13,7 @@ export const userData: UserData = {
 	last_name: 'Name',
 	email: 'user@example',
 	avatar: null,
+	avatar_id: null,
 	remember_token: 'token',
 	is_shop: false,
 	created_at: '2020-01-01',
@@ -69,4 +71,10 @@ export const commentData: CommentData = {
 	content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat laboriosam repudiandae dolorem ullam sit fuga quasi error ab. Architecto nihil illum sequi asperiores praesentium porro nisi qui voluptas exercitationem tempora.',
 	created_at: '2020-01-01',
 	updated_at: '2020-01-01'
+}
+
+export const trolleyItemData: TrolleyItem = {
+	owner: userData,
+	product: productData,
+	quantity: 1
 }

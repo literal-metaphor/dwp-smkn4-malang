@@ -232,7 +232,7 @@
 					use:ripple
 					on:click={(e) => {
 						e.preventDefault();
-						item.callback();
+						setTimeout(() => item.callback(), 250);
 					}}
 					class={`flex justify-start items-center w-full h-fit p-2 bg-white my-2 border border-grey rounded-lg`}
 				>
