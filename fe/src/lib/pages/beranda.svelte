@@ -89,7 +89,7 @@
 	$: filteredProducts = products.filter(
 		(productData) => currentCategory === 'all' || currentCategory === productData.category
 	);
-	$: allLoaded = productsPage > productsLastPage;
+	$: allLoaded = productsPage >= productsLastPage;
 </script>
 
 <div class={`lg:container overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
@@ -196,7 +196,7 @@
 					{/if}
 				{/each}
 				<InfiniteScroll threshold={products.length > 10 ? 10 : products.length - 1} on:loadMore={getProducts} />
-				<!-- {#if !allLoaded && !isSearch} -->
+				{#if !allLoaded}
 					<svg
 						class="animate-spin h-16 w-16 ms-4"
 						xmlns="http://www.w3.org/2000/svg"
@@ -213,7 +213,7 @@
 					</svg>
 				<!-- {:else} -->
 					<!-- <p class="text-lg font-bold text-center">Semua produk sudah ditampilkan</p> -->
-				<!-- {/if} -->
+				{/if}
 			</ul>
 		</div>
 	</div>
@@ -281,7 +281,7 @@
 				{/if}
 			{/each}
 			<InfiniteScroll threshold={products.length > 10 ? 10 : products.length - 1} on:loadMore={getProducts} />
-			<!-- {#if !allLoaded && !isSearch} -->
+			{#if !allLoaded}
 				<svg
 					class="animate-spin h-16 w-16 ms-4"
 					xmlns="http://www.w3.org/2000/svg"
@@ -298,7 +298,7 @@
 				</svg>
 			<!-- {:else} -->
 				<!-- <p class="text-lg font-bold text-center">Semua produk sudah ditampilkan</p> -->
-			<!-- {/if} -->
+			{/if}
 		</ul>
 	</div>
 </div>
