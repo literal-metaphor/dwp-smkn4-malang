@@ -15,6 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('customer_id');
             $table->enum('method', ['cod'])->default('cod'); // Might wanna add more in the future
+            $table->double('longitude');
+            $table->double('latitude');
+            $table->text('address_criteria');
             $table->timestamps();
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });

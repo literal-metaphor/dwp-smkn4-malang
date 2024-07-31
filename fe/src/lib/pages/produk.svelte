@@ -135,7 +135,9 @@
         quantity: quantity
       });
       sessionStorage.setItem('cart', JSON.stringify(carts));
-      alert("Produk ditambahkan ke keranjang belanja");
+      setTimeout(() => {
+        sessionPage.set('troli');
+      }, 500)
     } catch (err) {
       handleError(err);
     }

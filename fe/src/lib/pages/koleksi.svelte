@@ -47,7 +47,7 @@
 		<div class="flex flex-col col-span-12 //lg:col-span-9 min-h-full">
 			<!-- Search bar -->
 			<!-- TODO: write search endpoint on laravel backend -->
-			<label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
+			<!-- <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
 			<div class={`relative p-1`}>
 				<div class={`absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none`}>
 					<svg
@@ -75,7 +75,7 @@
 					autocomplete="off"
 					required
 				/>
-			</div>
+			</div> -->
 
 			<br />
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('owner_id');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price');
+            $table->double('price');
             $table->enum('category', ['food', 'drink', 'female_fashion', 'male_fashion', 'child_fashion', 'furniture']);
             $table->timestamps();
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

@@ -104,6 +104,11 @@
 				}
 			});
 	}
+
+	function search(e: Event) {
+		const target = e.target as HTMLInputElement;
+		products = products.filter((product) => product.name.includes(target.value)); // Make it more complex in the future
+	}
 </script>
 
 <dialog id="create_product_modal" class="daisy-modal">
@@ -212,7 +217,6 @@
 
 		<div class="flex flex-col col-span-12 //lg:col-span-9 min-h-full">
 			<!-- Search bar -->
-			<!-- TODO: write search endpoint on laravel backend -->
 			<label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
 			<div class={`relative p-1`}>
 				<div class={`absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none`}>
@@ -233,6 +237,7 @@
 					</svg>
 				</div>
 				<input
+					on:change={search}
 					type="text"
 					id="search"
 					name="search"

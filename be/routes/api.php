@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('/product')->group(function () {
         Route::get('/', [ProductController::class, 'index']);
         Route::get('/paginate', [ProductController::class, 'paginate']);
+        Route::get('/paginate/category/{category}', [ProductController::class, 'paginateByCategory']);
         Route::get('/{id}', [ProductController::class, 'show']);
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{id}', [ProductController::class, 'update']);
@@ -64,9 +65,13 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{id}', [ProductController::class, 'deletePhoto']);
         });
 
-        Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
-        Route::get('/wishlist/{user_id}', [ProductController::class, 'getWishlist']);
-        Route::get('/wishlist/{user_id}/{id}', [ProductController::class, 'isWishlist']);
+        Route::prefix('/wishlist')->group(function () {
+            Route::post('/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
+            Route::get('/{user_id}', [ProductController::class, 'getWishlist']);
+            Route::get('/{user_id}/{id}', [ProductController::class, 'isWishlist']);
+        });
+
+        Route::get('/search/{q}', [ProductController::class, 'search']);
     });
 
     // * Transaction Routes

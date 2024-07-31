@@ -63,6 +63,13 @@ class ProductController extends Controller
     }
 
     /**
+     * Paginate by category
+     */
+    public function paginateByCategory(string $category) {
+        return response()->json(Product::where('category', $category)->orderBy('created_at', 'desc')->paginate(10));
+    }
+
+    /**
      * Index products by owner
      */
     public function indexByOwner(string $owner_id) {
@@ -220,6 +227,17 @@ class ProductController extends Controller
     public function isWishlist(Request $req, string $user_id, string $id) {
         try {
             return response()->json(Wishlist::where('user_id', $user_id)->where('product_id', $id)->exists());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Search products
+     */
+    public function search(string $q) {
+        try {
+            return response()->json(Product::where('name', 'like', '%' . $q . '%')->get());
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

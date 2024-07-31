@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
-use App\Models\Shop;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -44,58 +43,19 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // Create some products
-        $productData = [
-            [
+        $productData = [];
+        for ($i = 0; $i < 100; $i++) {
+            $productData[] = [
                 'id' => Str::uuid(),
                 'owner_id' => $merchant->id,
-                'name' => 'Pizza',
-                'description' => 'A delicious pizza',
-                'price' => 10000,
-                'category' => 'food',
-            ],
-            [
-                'id' => Str::uuid(),
-                'owner_id' => $merchant->id,
-                'name' => 'Cola',
-                'description' => 'A popular soda drink',
-                'price' => 2000,
-                'category' => 'drink',
-            ],
-            [
-                'id' => Str::uuid(),
-                'owner_id' => $merchant->id,
-                'name' => 'Little Black Dress',
-                'description' => 'A classic little black dress for women',
-                'price' => 50000,
-                'category' => 'female_fashion',
-            ],
-            [
-                'id' => Str::uuid(),
-                'owner_id' => $merchant->id,
-                'name' => 'Formal Suit',
-                'description' => 'A high-quality formal suit for men',
-                'price' => 150000,
-                'category' => 'male_fashion',
-            ],
-            [
-                'id' => Str::uuid(),
-                'owner_id' => $merchant->id,
-                'name' => "Children's T-Shirt",
-                'description' => 'A fun and colorful t-shirt for children',
-                'price' => 10000,
-                'category' => 'child_fashion',
-            ],
-            [
-                'id' => Str::uuid(),
-                'owner_id' => $merchant->id,
-                'name' => 'Modern Sofa',
-                'description' => 'A comfortable and stylish sofa for your living room',
-                'price' => 500000,
-                'category' => 'furniture',
-            ],
-        ];
-        foreach ($productData as $data) {
-            Product::create($data);
+                'name' => fake()->word(),
+                'description' => fake()->sentence(),
+                'price' => fake()->numberBetween(1000, 1000000),
+                'category' => fake()->randomElement(['food', 'drink', 'female_fashion', 'male_fashion', 'child_fashion', 'furniture']),
+            ];
+        }
+        foreach ($productData as $product) {
+            Product::create($product);
         }
     }
 }

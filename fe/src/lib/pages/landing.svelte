@@ -289,7 +289,9 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 		{:else}
 			<button
 				on:click={() => {
-					sessionPage.set('beranda');
+					setTimeout(() => {
+						sessionPage.set('beranda');
+					}, 250);
 				}}
 				use:ripple
 				class="bg-french-violet text-white font-semibold px-6 py-2 me-4 rounded-md">Beranda</button
@@ -305,7 +307,7 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 
 		<h1 class="text-h6 font-bold mb-6">
 			Temukan Kebutuhan Rumah Tangga dan Banyak Lagi <br /> Hanya di
-			<span class="text-french-violet">DWP SMKN 4 Malang</span>
+			<span class="text-french-violet">DWP Grafika Market</span>
 		</h1>
 
 		<p class="mb-6">
@@ -323,7 +325,9 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 		{:else}
 			<button
 				on:click={() => {
-					sessionPage.set('beranda');
+					setTimeout(() => {
+						sessionPage.set('beranda');
+					}, 250);
 				}}
 				use:ripple
 				class={`m-2 bg-french-violet text-white font-semibold px-12 py-4 mx-1 rounded-md`}
@@ -422,7 +426,7 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 <section class="py-12 p-4 bg-french-violet text-white">
 	<div class="lg:container mx-auto flex flex-col items-center lg:items-start">
 		<h2 class="text-3xl font-bold mb-2">Tunggu Apa Lagi?</h2>
-		<p>Ayo mulai berbelanja di DWP SMKN 4 Malang!</p>
+		<p>Ayo mulai berbelanja di DWP Grafika Market!</p>
 		<br />
 		{#if !$authStatus}
 			<button on:click={showAuthModal} use:ripple class="bg-white text-black px-8 py-3 rounded-md"
@@ -431,7 +435,9 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 		{:else}
 			<button
 				on:click={() => {
-					sessionPage.set('beranda');
+					setTimeout(() => {
+						sessionPage.set('beranda');
+					}, 250);
 				}}
 				use:ripple
 				class="bg-white text-black px-8 py-3 rounded-md">Belanja Sekarang</button
@@ -445,7 +451,7 @@ py-2 px-4 rounded focus:outline-none focus:shadow-outline">Reset</button
 	<div class="lg:container mx-auto flex justify-center items-center">
 		<div class="flex items-center">
 			<img src={logo} alt="Logo" class="size-8 me-3" />
-			<p>&copy; 2024 DWP SMKN 4 Malang. <br class="lg:hidden" /> Seluruh Hak Cipta.</p>
+			<p>&copy; 2024 DWP Grafika Market. <br class="lg:hidden" /> Seluruh Hak Cipta.</p>
 		</div>
 	</div>
 </footer>

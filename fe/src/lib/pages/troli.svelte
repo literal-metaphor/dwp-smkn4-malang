@@ -70,7 +70,7 @@
       </div>
 
       <!-- Product Details -->
-      <div class="flex">
+      <div class="flex flex-col lg:flex-row">
           <!-- Product Image -->
           <img src={item.product.images && item.product.images.length > 0 ? store + item.product.images[0] : noimage} alt="Product" class="size-32 object-cover mr-4 border border-grey rounded">
 
