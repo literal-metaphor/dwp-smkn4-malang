@@ -177,21 +177,8 @@
 	<div class="daisy-modal-box">
 		<h3 class="text-lg font-bold">Ketentuan Layanan</h3>
 
-		Pembaruan Terakhir : [26 Juli 2024]
-
-		Selamat datang di [Nama Olshop Anda]! Kami sangat senang Anda memilih untuk berbelanja dengan kami. Dengan mengakses atau menggunakan layanan kami, Anda menyetujui untuk terikat dengan Ketentuan Layanan berikut. Mohon baca dengan cermat.
-		
-		1. Penerimaan Syarat
-		Dengan mengakses atau menggunakan situs web dan layanan kami, Anda menyetujui untuk mematuhi dan terikat oleh Ketentuan Layanan ini. Jika Anda tidak menyetujui salah satu dari syarat ini, Anda tidak boleh menggunakan layanan kami.
-		
-		2. Modifikasi Ketentuan
-		Kami berhak untuk mengubah atau memperbarui Ketentuan Layanan ini kapan saja. Setiap perubahan akan diberlakukan segera setelah dipublikasikan di situs web kami. Penggunaan berkelanjutan Anda terhadap layanan kami setelah perubahan tersebut merupakan penerimaan Anda terhadap perubahan tersebut.
-		
-		3. Kualifikasi Pengguna
-		Layanan kami hanya tersedia bagi individu yang berusia minimal 12 tahun. Dengan menggunakan layanan kami, Anda menyatakan dan menjamin bahwa Anda berusia setidaknya 12 tahun.
-		
-		4. Akun Pengguna
-		Untuk mengakses beberapa fitur di situs web kami, Anda mungkin perlu membuat akun pengguna. Anda bertanggung jawab untuk menjaga kerahasiaan informasi akun Anda, termasuk kata sandi Anda, dan untuk semua aktivitas yang terjadi di bawah akun Anda. Anda setuju untuk segera memberi tahu kami tentang penggunaan yang tidak sah dari akun Anda atau pelanggaran keamanan lainnya.
+		<!-- TODO: Add TOS -->
+		-
 
 		<form method="dialog">
 			<button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>

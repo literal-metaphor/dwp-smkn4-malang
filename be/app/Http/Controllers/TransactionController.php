@@ -18,6 +18,10 @@ class TransactionController extends Controller
     private function validateTransactionData(Request $req) {
         $data = $this->validateRequest($req, [
             'customer_id' => 'required|uuid|exists:users,id',
+            'method' => 'required|string|in:cod',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'address_criteria' => 'required|string',
             'items' => 'required|array',
         ]);
 
@@ -61,8 +65,8 @@ class TransactionController extends Controller
         $transaction = Transaction::findOrFail($transaction_id);
 
         if ($transaction->customer_id !== $user->id) {
-            $shop_ids = Product::whereIn('id', array_column($req['items'], 'product_id'))->pluck('shop_id');
-            $shops = Shop::whereIn('id', $shop_ids)->get();
+            $shop_ids = Product::whereIn('id', array_column($req['items'], 'product_id'))->pluck('owner_id');
+            $shops = User::whereIn('id', $shop_ids)->get();
             $is_shopkeeper = $shops->contains('owner_id', $user->id);
             if (!$is_shopkeeper) {
                 // return response()->json(['message' => 'User is not authorized'], 401);
