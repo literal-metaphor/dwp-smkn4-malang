@@ -9,10 +9,12 @@
 
 	// Get products
 	let products: ProductData[] | [] = [];
+	let allProducts: ProductData[] | [] = [];
 	async function getProducts() {
 		try {
 			const productsRes = await api.get(`/product/owner/${JSON.parse(localStorage.getItem('userData') || '{}').id}`);
 			products = [...products, ...productsRes.data];
+			allProducts = products;
 		} catch (err) {
 			console.log(err);
 			switch (true) {
@@ -107,7 +109,12 @@
 
 	function search(e: Event) {
 		const target = e.target as HTMLInputElement;
-		products = products.filter((product) => product.name.includes(target.value)); // Make it more complex in the future
+		if (!target.value) {
+			products = allProducts;
+		} else {
+			const all = allProducts;
+			products = all.filter((product) => product.name.includes(target.value)); // Make it more complex in the future
+		}
 	}
 </script>
 

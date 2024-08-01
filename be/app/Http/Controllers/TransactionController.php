@@ -113,6 +113,10 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'id' => Str::uuid(),
                 'customer_id' => $data['customer_id'],
+                'method' => $data['method'],
+                'longitude' => $data['longitude'],
+                'latitude' => $data['latitude'],
+                'address_criteria' => $data['address_criteria'],
             ]);
 
             $transaction_items = [];

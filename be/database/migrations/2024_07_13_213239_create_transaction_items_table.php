@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('transaction_id');
             $table->uuid('product_id');
             $table->integer('quantity');
-            $table->decimal('price');
+            $table->double('price');
             $table->enum('status', ['pending', 'delivered'])->default('pending');
             $table->date("delivery_date")->nullable();
             $table->timestamps();
