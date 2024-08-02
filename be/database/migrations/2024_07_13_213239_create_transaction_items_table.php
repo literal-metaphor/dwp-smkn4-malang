@@ -16,10 +16,12 @@ return new class extends Migration
             $table->uuid('transaction_id');
             $table->uuid('product_id');
             $table->integer('quantity');
-            $table->decimal('price');
+            $table->double('price');
+            $table->enum('status', ['pending', 'delivered'])->default('pending');
+            $table->date("delivery_date")->nullable();
             $table->timestamps();
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null')->onUpdate('set null');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

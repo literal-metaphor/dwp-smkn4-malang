@@ -20,8 +20,8 @@ class UserController extends Controller
             'password' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'last_name' => 'string|max:255|nullable',
-            'cell_phone_number' => 'required|string|max:15',
-            'country_code' => 'required|string|max:2',
+            // 'cell_phone_number' => 'required|string|max:15',
+            // 'country_code' => 'required|string|max:2',
         ]);
     }
 
@@ -48,6 +48,47 @@ class UserController extends Controller
             throw new \Exception('Invalid token');
         }
     }
+
+    /**
+     * Handle OAuth for a user
+     */
+    public function oauth(Request $req) {
+        $data = $this->validateRequest($req, [
+            "email" => "required|email|max:255",
+            "password" => "required|string|max:255"
+        ]);
+
+        // Check if the email is already registered
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            // If the user exists, log them in
+            if (!Hash::check($data['password'], $user->password)) {
+                return response()->json(['message' => 'Invalid password'], 401);
+            }
+            if ($user->banned) {
+                return response()->json(['message' => 'User is banned'], 401);
+            }
+            $user->remember_token = bin2hex(random_bytes(16));
+            $user->save();
+            return response()->json($user);
+        } else {
+            $data = $this->validateUserData($req);
+
+            // If the user doesn't exist, register them
+            $data['password'] = Hash::make($data['password']);
+            $data['id'] = Str::uuid();
+            $data['remember_token'] = bin2hex(random_bytes(16));
+
+            try {
+                $user = User::create($data);
+                return response()->json($user);
+            } catch (\Throwable $e) {
+                return response()->json(['message' => $e->getMessage()], 500);
+            }
+        }
+    }
+
 
     /**
      * Register a new user and create a new token for them
@@ -195,6 +236,28 @@ class UserController extends Controller
     }
 
     /**
+     * Change user's password
+     */
+    public function changePassword(Request $req, string $id) {
+        try {
+            $this->assertAuthorized($req, $id);
+            $data = $this->validateRequest($req, [
+                'old_password' => 'required|string|max:255',
+                'new_password' => 'required|string|max:255',
+            ]);
+            $user = User::findOrFail($id);
+            if (!Hash::check($data['old_password'], $user->password)) {
+                return response()->json(['message' => 'Invalid old password'], 401);
+            }
+            $user->password = Hash::make($data['password']);
+            $user->save();
+            return response()->json(['message' => 'Password changed']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Toggle a user's ban status
      */
     public function toggleBan(Request $req, string $id) {
@@ -219,6 +282,21 @@ class UserController extends Controller
             $user->is_admin = !$user->is_admin;
             $user->save();
             return response()->json(['message' => "$user->username is now ".($user->is_admin ? 'promoted to admin' : 'demoted from admin') . "."]);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Toggle shop status
+     */
+    public function toggleShop(Request $req, string $id) {
+        try {
+            $this->assertAdmin($req);
+            $user = User::findOrFail($id);
+            $user->is_shop = !$user->is_shop;
+            $user->save();
+            return response()->json(['message' => "$user->username is now ".($user->is_shop ? 'promoted to shop' : 'demoted from shop') . "."]);
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

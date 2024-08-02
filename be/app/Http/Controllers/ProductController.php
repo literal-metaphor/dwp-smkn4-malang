@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     private function validateProductData(Request $req) {
         return $this->validateRequest($req, [
-            'shop_id' => 'required|uuid|exists:shops,id',
+            'owner_id' => 'required|uuid|exists:users,id',
             'name' => 'required|string|max:255',
             'price' => 'required|integer|min:0',
             'description' => 'string|nullable',
@@ -29,13 +29,12 @@ class ProductController extends Controller
     /**
      * Check if the user is the shopkeeper of the shop or an admin
      */
-    public function assertAuthorized(Request $req, string $shop_id) {
+    public function assertAuthorized(Request $req) {
         // Check if the user is an admin
         if (!User::where('remember_token', $req->bearerToken())->first()->is_admin) {
             // Check if the user is the shopkeeper of the shop
             $user = User::where('remember_token', $req->bearerToken())->first();
-            $shop = Shop::findOrFail($shop_id);
-            if ($shop->owner_id !== $user->id) {
+            if (!$user->is_shop) {
                 // return response()->json(['message' => 'User is not authorized'], 401);
                 throw new \Exception('User is not authorized');
             }
@@ -57,13 +56,34 @@ class ProductController extends Controller
     }
 
     /**
+     * Paginate some products
+     */
+    public function paginate() {
+        return response()->json(Product::orderBy('created_at', 'desc')->paginate(10));
+    }
+
+    /**
+     * Paginate by category
+     */
+    public function paginateByCategory(string $category) {
+        return response()->json(Product::where('category', $category)->orderBy('created_at', 'desc')->paginate(10));
+    }
+
+    /**
+     * Index products by owner
+     */
+    public function indexByOwner(string $owner_id) {
+        return response()->json(Product::where('owner_id', $owner_id)->get());
+    }
+
+    /**
      * Create a new product
      */
     public function store(Request $req) {
         try {
             $data = $this->validateProductData($req);
 
-            $this->assertAuthorized($req, $data['shop_id']);
+            $this->assertAuthorized($req);
 
             $data['id'] = Str::uuid();
 
@@ -80,7 +100,7 @@ class ProductController extends Controller
         try {
             $data = $this->validateProductData($req);
 
-            $this->assertAuthorized($req, $data['shop_id']);
+            $this->assertAuthorized($req);
 
             Product::findOrFail($id)->update($data);
 
@@ -93,9 +113,9 @@ class ProductController extends Controller
     /**
      * Delete a product
      */
-    public function destroy(Request $req, string $shop_id, string $id) {
+    public function destroy(Request $req, string $id) {
         try {
-            $this->assertAuthorized($req, $shop_id);
+            $this->assertAuthorized($req);
             Product::findOrFail($id)->delete();
             return response()->json(['message' => 'Product deleted']);
         } catch (\Throwable $e) {
@@ -115,9 +135,9 @@ class ProductController extends Controller
     /**
      * Add photo to a product
      */
-    public function addPhoto(Request $req, string $shop_id, string $id) {
+    public function addPhoto(Request $req, string $id) {
         try {
-            $this->assertAuthorized($req, $shop_id);
+            $this->assertAuthorized($req);
 
             $req->validate(['file' => 'required|max:10240|mimes:jpeg,png,jpg,svg']);
 
@@ -148,18 +168,20 @@ class ProductController extends Controller
     /**
      * Delete a photo from a product
      */
-    public function deletePhoto(Request $req, string $shop_id, string $id, string $photo_id) {
+    public function deletePhoto(Request $req, string $id,) {
         try {
-            $this->assertAuthorized($req, $shop_id);
+            $this->assertAuthorized($req);
 
             // Check if the product exists
             Product::findOrFail($id);
+            $photos = ProductPhoto::where('product_id', $id)->get();
+            $files = File::whereIn('id', $photos->pluck('photo_id'))->get();
 
-            $file = File::findOrFail($photo_id); // For some reason, File::findOrFail doesn't work. It doesn't stop even though the file doesn't exist. But it works, so let's just roll with it.
-
-            $this->deleteFile($file->filename);
-
-            $file->delete();
+            foreach ($files as &$file) {
+                $this->deleteFile($file->filename);
+                $file->delete();
+            }
+            unset($file);
 
             return response()->json(['message' => 'Photo deleted']);
         } catch (\Throwable $e) {
@@ -183,6 +205,39 @@ class ProductController extends Controller
                 ]);
                 return response()->json(['message' => 'Wishlist added']);
             }
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get wishlists of a user
+     */
+    public function getWishlist(Request $req, string $user_id) {
+        try {
+            return response()->json(Wishlist::where('user_id', $user_id)->get());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Check if a product is wishlist of a user
+     */
+    public function isWishlist(Request $req, string $user_id, string $id) {
+        try {
+            return response()->json(Wishlist::where('user_id', $user_id)->where('product_id', $id)->exists());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Search products
+     */
+    public function search(string $q) {
+        try {
+            return response()->json(Product::where('name', 'like', '%' . $q . '%')->get());
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

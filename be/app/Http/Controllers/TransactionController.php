@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -18,6 +20,10 @@ class TransactionController extends Controller
     private function validateTransactionData(Request $req) {
         $data = $this->validateRequest($req, [
             'customer_id' => 'required|uuid|exists:users,id',
+            'method' => 'required|string|in:cod',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'address_criteria' => 'required|string',
             'items' => 'required|array',
         ]);
 
@@ -61,13 +67,64 @@ class TransactionController extends Controller
         $transaction = Transaction::findOrFail($transaction_id);
 
         if ($transaction->customer_id !== $user->id) {
-            $shop_ids = Product::whereIn('id', array_column($req['items'], 'product_id'))->pluck('shop_id');
-            $shops = Shop::whereIn('id', $shop_ids)->get();
+            $shop_ids = Product::whereIn('id', array_column($req['items'], 'product_id'))->pluck('owner_id');
+            $shops = User::whereIn('id', $shop_ids)->get();
             $is_shopkeeper = $shops->contains('owner_id', $user->id);
             if (!$is_shopkeeper) {
                 // return response()->json(['message' => 'User is not authorized'], 401);
                 throw new \Exception('User is not authorized');
             }
+        }
+    }
+
+    /**
+     * Index by user
+     */
+    public function indexByUser(string $user_id) {
+        try {
+            $output = [];
+
+            // Check all transactions where customer_id = $user_id
+            $customer_transactions = Transaction::where('customer_id', $user_id)->get()->toArray();
+
+            // Check all transaction_items where the corresponding product's owner_id is $user_id, then get all the transactions from those transaction_items
+            $shop_transaction_items = TransactionItem::whereIn('product_id', Product::where('owner_id', $user_id)->pluck('id'))->get();
+            $shop_transactions = [];
+            foreach ($shop_transaction_items as &$transaction_item) {
+                $shop_transactions[] = Transaction::where('id', $transaction_item->transaction_id)->first();
+            }
+
+            // Merge the two queries
+            $output = array_merge($customer_transactions, $shop_transactions);
+
+            // Remove duplicates
+            if ($shop_transactions) {
+                $output = array_unique($output);
+            }
+
+            // Add product details
+            foreach ($output as &$transaction) {
+                $items = TransactionItem::where('transaction_id', $transaction['id'])->get();
+
+                foreach ($items as $item) {
+                    $item->product = Product::where('id', $item->product_id)->first();
+                    $item->product->owner = User::where('id', $item->product->owner_id)->first();
+                    $item->product->owner->avatar = File::where('id', $item->product->owner->avatar_id)->first();
+                }
+
+                $transaction['items'] = $items;
+            }
+            unset($transaction);
+
+            // Sort by created_at
+            usort($output, function ($a, $b) {
+                return $b['created_at'] > $a['created_at'];
+            });
+
+            // Return the response
+            return response()->json($output);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -106,9 +163,14 @@ class TransactionController extends Controller
         try {
             $data = $this->validateTransactionData($req);
 
+            // I know I could make this shorter, but let's just say I'm shorter on time right now
             $transaction = Transaction::create([
                 'id' => Str::uuid(),
                 'customer_id' => $data['customer_id'],
+                'method' => $data['method'],
+                'longitude' => $data['longitude'],
+                'latitude' => $data['latitude'],
+                'address_criteria' => $data['address_criteria'],
             ]);
 
             $transaction_items = [];
@@ -130,7 +192,35 @@ class TransactionController extends Controller
         }
     }
 
-    // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
+    /**
+     * Update a transaction
+     */
+    public function update(Request $req, string $id) {
+        try {
+            $this->assertAuthorized($req, $id);
+            $data = $this->validateTransactionData($req);
+            $transaction = Transaction::findOrFail($id);
+            $transaction->update($data);
+            return response()->json($transaction);
+
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Confirm delivery of a transaction item
+     */
+    public function confirmDelivery(Request $req, string $id) {
+        try {
+            $this->assertAuthorized($req, $id);
+            $transaction_item = TransactionItem::findOrFail($id);
+            $transaction_item->update(['status' => 'delivered', 'delivery_date' => Carbon::now()]);
+            return response()->json($transaction_item);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Delete a transaction by ID

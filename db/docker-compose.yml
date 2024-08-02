@@ -1,31 +1,73 @@
-services:
-  pgsql:
-    image: postgres
-    container_name: pgsql
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    # volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
-    volumes:
-      - ./pgsql_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pwd
-      POSTGRES_DB: dwp_smkn4_malang
-    ports:
-      - 5432:5432
+# services:
+#   pgsql:
+#     image: postgres
+#     container_name: pgsql
+#     # set shared memory limit when using docker-compose
+#     shm_size: 128mb
+#     # or set shared memory limit when deploy via swarm stack
+#     # volumes:
+#     #  - type: tmpfs
+#     #    target: /dev/shm
+#     #    tmpfs:
+#     #      size: 134217728 # 128*2^20 bytes = 128Mb
+#     volumes:
+#       - ./pgsql_data:/var/lib/postgresql/data
+#     environment:
+#       POSTGRES_USER: user
+#       POSTGRES_PASSWORD: pwd
+#       POSTGRES_DB: dwp_smkn4_malang
+#     ports:
+#       - 5432:5432
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
+#   pgadmin:
+#     image: dpage/pgadmin4
+#     container_name: pgadmin
+#     ports:
+#       - 5050:80
+#     volumes:
+#       - ./pgadmin_data:/var/lib/pgadmin
+#     environment:
+#       - PGADMIN_DEFAULT_EMAIL=root@root.com
+#       - PGADMIN_DEFAULT_PASSWORD=pwd
+
+services:
+  # mariadb:
+  #   container_name: mariadb
+  #   image: mariadb:latest
+  #   restart: always
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MARIADB_ROOT_PASSWORD: root
+  #   # networks:
+  #   #   - dwp-smkn4-malang-db-net
+  #   volumes:
+  #     - ./mariadb_data:/var/lib/mysql
+
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    # restart: always
     ports:
-      - 5050:80
-    volumes:
-      - ./pgadmin_data:/var/lib/pgadmin
+      - "3306:3306"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=root@root.com
-      - PGADMIN_DEFAULT_PASSWORD=pwd
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    # restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_ARBITRARY=1
+    # networks:
+    #   - dwp-smkn4-malang-db-net
+    volumes:
+      - ./pma_data:/var/lib/mysql
+
+# networks:
+#   dwp-smkn4-malang-db-net:
+#     driver: bridge

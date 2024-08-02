@@ -1,64 +1,96 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+	import { sessionPage } from '$lib/utils/page';
 
-    // Components
-    import FeaturedProduct from '$lib/components/featured_product.svelte';
+	import Beranda from '$lib/pages/beranda.svelte';
+	import Koleksi from '$lib/pages/koleksi.svelte';
+	import Riwayat from '$lib/pages/riwayat.svelte';
+	import Profile from '$lib/pages/profile.svelte';
+	import Landing from '$lib/pages/landing.svelte';
 
-    // Images
-    import bannerex from "$lib/assets/bannerex.svg";
-    import shirtex from "$lib/assets/shirtex.svg";
-	import CategoryButton from '$lib/components/category_button.svelte';
-	import ProductCard from '$lib/components/product_card.svelte';
+	import { onMount } from 'svelte';
+	import { authStatus } from '$lib/utils/guard';
+	import Toko from '$lib/pages/toko.svelte';
+	import Produk from '$lib/pages/produk.svelte';
+	import Troli from '$lib/pages/troli.svelte';
 
-    export let data: PageData;
+	$: $authStatus;
+
+	// Scroll to top functionality
+	let isScrolled = false;
+	onMount(() => {
+		const handleScroll = () => {
+			isScrolled = window.scrollY > 0;
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	});
+
+	// Define which pages should be layouted
+	const layoutedPages = ['beranda', 'koleksi', 'riwayat', 'profile'];
+
+	// Reactive state
+	$: $sessionPage;
 </script>
 
-<div class={`container overflow-x-hidden flex justify-content flex-col w-screen h-fit p-4`}>
+{#if $authStatus}
+	{#if $sessionPage === 'landing'}
+		<Landing />
+	{:else}
+		<div
+			class={`${layoutedPages.includes($sessionPage) && `pt-24 lg:pt-32 pb-32 lg:pb-0 lg:ps-32`}`}
+		>
+			<!-- Padding because fixed navbar and header would block the contents -->
+			{#if $sessionPage === 'beranda'}
+				<Beranda />
+			{/if}
 
-    <!-- Featured product -->
-    <h2 class={`text-lg font-bold`}>
-        Produk Unggulan
-    </h2>
+			{#if $sessionPage === 'koleksi'}
+				<Koleksi />
+			{/if}
 
-    <br>
+			{#if $sessionPage === 'riwayat'}
+				<Riwayat />
+			{/if}
 
-    <FeaturedProduct banner={bannerex} heading={`Koleksi Baju Modern`} />
+			{#if $sessionPage === 'profile'}
+				<Profile />
+			{/if}
 
-    <br>
+			{#if $sessionPage === 'produk'}
+				<Produk />
+			{/if}
 
-    <!-- Categories -->
-    <div class={`flex items-center overflow-x-auto`}>
-        <CategoryButton current={true} label={`Semua`} />
-        <CategoryButton current={false} label={`Fashion`} />
-        <CategoryButton current={false} label={`Peralatan`} />
-        <CategoryButton current={false} label={`Sembako`} />
-        <CategoryButton current={false} label={`Perabotan`} />
-     </div>
+			{#if $sessionPage === 'troli'}
+				<Troli />
+			{/if}
 
-     <br>
+			{#if $sessionPage === 'toko'}
+				<Toko />
+			{/if}
+		</div>
+	{/if}
+{:else}
+	<Landing />
+{/if}
 
-     <!-- Search bar -->
-     <form on:submit={(e)=>e.preventDefault()}>
-        <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
-        <div class={`relative`}>
-            <div class={`absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none`}>
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                </svg>
-            </div>
-            <input type="text" id="search" name="search" class={`block w-full p-4 ps-10 text-sm text-black rounded-lg bg-white border border-grey focus:ring-1 focus:ring-french-violet focus:outline-none transition duration-300`} placeholder="Cari merek atau produk" autocomplete="off" required/>
-        </div>
-    </form>
-
-    <br>
-
-    <!-- Products -->
-    <div class={`flex items-center flex-wrap`}>
-        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
-        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
-        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
-        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
-        <ProductCard name={`T-Shirt`} price={`Rp 10,000.00`} photo={shirtex} />
-    </div>
-
-</div>
+<!-- Scroll to top -->
+<button
+	type="button"
+	on:click={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+	class={`fixed bottom-40 lg:bottom-16 end-12 rounded-full shadow-lg ${!isScrolled && `opacity-0`} transition duration-300 z-50`}
+>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="48"
+		height="48"
+		fill="#125FF3"
+		class="bi bi-arrow-up-circle-fill"
+		viewBox="0 0 16 16"
+	>
+		<path
+			d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"
+		/>
+	</svg>
+</button>

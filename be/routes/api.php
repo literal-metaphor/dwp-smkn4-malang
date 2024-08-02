@@ -5,7 +5,6 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingController;
-use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +21,13 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}', [UserController::class, 'verify']);
         Route::put('/', [UserController::class, 'login']);
         Route::delete('/{id}', [UserController::class, 'logout']);
+        Route::post('/oauth', [UserController::class, 'oauth']);
+        Route::put('/{id}/password', [UserController::class, 'changePassword']);
 
         Route::prefix('/admin')->group(function () {
             Route::put('/{id}/toggle-ban', [UserController::class, 'toggleBan']);
             Route::put('/{id}/toggle-admin', [UserController::class, 'toggleAdmin']);
+            Route::put('/{id}/toggle-shop', [UserController::class, 'toggleShop']);
         });
     });
 
@@ -45,42 +47,43 @@ Route::prefix('v1')->group(function () {
         Route::delete('/avatar/{id}', [UserController::class, 'destroyAvatar']);
     });
 
-    // * Shop Routes
-    Route::prefix('/shop')->group(function () {
-        Route::get('/', [ShopController::class, 'index']);
-        Route::get('/{id}', [ShopController::class, 'show']);
-        Route::middleware([AdminOnly::class])->group(function () {
-            Route::post('/', [ShopController::class, 'store']);
-            Route::put('/{id}', [ShopController::class, 'update']);
-            Route::delete('/{id}', [ShopController::class, 'destroy']);
-        });
-    });
-
     // * Product Routes
     Route::prefix('/product')->group(function () {
         Route::get('/', [ProductController::class, 'index']);
+        Route::get('/paginate', [ProductController::class, 'paginate']);
+        Route::get('/paginate/category/{category}', [ProductController::class, 'paginateByCategory']);
         Route::get('/{id}', [ProductController::class, 'show']);
         Route::post('/', [ProductController::class, 'store']);
         Route::put('/{id}', [ProductController::class, 'update']);
-        Route::delete('/{shop_id}/{id}', [ProductController::class, 'destroy']);
+        Route::delete('/{id}', [ProductController::class, 'destroy']);
+
+        Route::get('/owner/{owner_id}', [ProductController::class, 'indexByOwner']);
 
         Route::prefix('/photo')->group(function () {
             Route::get('/{id}', [ProductController::class, 'getPhotos']);
-            Route::post('/{shop_id}/{id}', [ProductController::class, 'addPhoto']);
-            Route::delete('/{shop_id}/{id}/{photo_id}', [ProductController::class, 'deletePhoto']);
+            Route::post('/{id}', [ProductController::class, 'addPhoto']);
+            Route::delete('/{id}', [ProductController::class, 'deletePhoto']);
         });
 
-        Route::post('/wishlist/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
+        Route::prefix('/wishlist')->group(function () {
+            Route::post('/{user_id}/{id}', [ProductController::class, 'toggleWishlist']);
+            Route::get('/{user_id}', [ProductController::class, 'getWishlist']);
+            Route::get('/{user_id}/{id}', [ProductController::class, 'isWishlist']);
+        });
+
+        Route::get('/search/{q}', [ProductController::class, 'search']);
     });
 
     // * Transaction Routes
     Route::prefix('/transaction')->group(function () {
         Route::get('/{id}', [TransactionController::class, 'show']);
         Route::post('/', [TransactionController::class, 'store']);
+        Route::get('/user/{user_id}', [TransactionController::class, 'indexByUser']);
+        Route::put('/confirm/{id}', [TransactionController::class, 'confirmDelivery']);
 
         Route::middleware([AdminOnly::class])->group(function () {
             Route::get('/', [TransactionController::class, 'index']);
-            // Route::put('/{id}', [TransactionController::class, 'update']); // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
+            Route::put('/{id}', [TransactionController::class, 'update']);
             Route::delete('/{id}', [TransactionController::class, 'destroy']);
         });
     });
@@ -93,6 +96,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [RatingController::class, 'store']);
         // Route::put('/{id}', [RatingController::class, 'update']); // Combined with store
         Route::delete('/{id}', [RatingController::class, 'destroy']);
+
+        Route::get('/user/{product_id}', [RatingController::class, 'getRatingByUser']);
     });
 
     // * Comment Routes

@@ -18,10 +18,9 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('cell_phone_number', 15)->unique();
-            $table->string('country_code', 2);
             $table->uuid('avatar_id')->nullable();
             $table->boolean('banned')->default(false);
+            $table->boolean('is_shop')->default(false);
             $table->boolean('is_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();

@@ -4,12 +4,16 @@ namespace App\Models;
 
 class Product extends Model
 {
-    public function shop() {
-        $this->belongsTo(Shop::class);
+    public function owner() {
+        $this->belongsTo(User::class);
     }
 
-    public function reviews() {
-        $this->hasMany(Review::class);
+    public function ratings() {
+        $this->hasMany(Rating::class);
+    }
+
+    public function comments() {
+        $this->hasMany(Comment::class);
     }
 
     public function product_photos() {
