@@ -29,20 +29,20 @@
 		{#if image.filename}
 			<img src={store + image.filename} alt="Product" class={`w-full h-48 rounded-lg`} />
 		{:else}
-		<svg
-			class="animate-spin h-16 w-16 mx-auto"
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 24 24"
-		>
-			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-			></circle>
-			<path
-				class="opacity-75"
-				fill="#125FF3"
-				d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-			></path>
-		</svg>
+			<svg
+				class="animate-spin h-16 w-16 mx-auto"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+			>
+				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+				></circle>
+				<path
+					class="opacity-75"
+					fill="#125FF3"
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				></path>
+			</svg>
 		{/if}
 	{:else}
 		<img src={noimage} alt="Product" class={`w-full h-48 rounded-lg`} />
@@ -68,7 +68,7 @@
 				sessionStorage.setItem('product', JSON.stringify(product));
 
 				sessionPage.set(`produk`);
-			}, 250)
+			}, 250);
 		}}
 		type="button"
 		class={`w-full text-white bg-french-violet rounded-lg text-sm px-4 py-2 transition duration-300 disabled:opacity-50`}

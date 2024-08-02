@@ -1,18 +1,20 @@
 <script lang="ts">
-	import ProductCard from "$lib/components/product_card.svelte";
-	import type ProductData from "$lib/types/ProductData";
-	import { api } from "$lib/utils/api";
-	import { sessionPage } from "$lib/utils/page";
-	import { AxiosError } from "axios";
-	import { onMount } from "svelte";
-	import { ripple } from "svelte-ripple-action";
+	import ProductCard from '$lib/components/product_card.svelte';
+	import type ProductData from '$lib/types/ProductData';
+	import { api } from '$lib/utils/api';
+	import { sessionPage } from '$lib/utils/page';
+	import { AxiosError } from 'axios';
+	import { onMount } from 'svelte';
+	import { ripple } from 'svelte-ripple-action';
 
 	// Get products
 	let products: ProductData[] | [] = [];
 	let allProducts: ProductData[] | [] = [];
 	async function getProducts() {
 		try {
-			const productsRes = await api.get(`/product/owner/${JSON.parse(localStorage.getItem('userData') || '{}').id}`);
+			const productsRes = await api.get(
+				`/product/owner/${JSON.parse(localStorage.getItem('userData') || '{}').id}`
+			);
 			products = [...products, ...productsRes.data];
 			allProducts = products;
 		} catch (err) {
@@ -36,7 +38,7 @@
 	// Functions
 
 	// Format currency on create product form
-	let price: string = "";
+	let price: string = '';
 	let actualPrice: number = 0;
 	function formatPrice(e: Event) {
 		const target = e.target as HTMLInputElement;
@@ -45,7 +47,9 @@
 		const parsedVal = Number(formattedVal);
 		actualPrice = parsedVal <= 999999 ? parsedVal : 999999;
 		actualPrice = Number(formattedVal);
-		price = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(Number(formattedVal));
+		price = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
+			Number(formattedVal)
+		);
 	}
 
 	function openCreateProductModal() {
@@ -74,17 +78,19 @@
 
 		// formData.set('price', parseInt(price.replace(/[^0-9.-]+/g, "")).toFixed(2));
 
-		api.post('/product', formData)
+		api
+			.post('/product', formData)
 			.then((res) => {
-				alert("Produk berhasil dibuat");
+				alert('Produk berhasil dibuat');
 
 				// Upload photo too
 				const fileFormData = new FormData();
 				const file = formData.get('image') as File;
 				fileFormData.append('file', file);
-				api.post(`/product/photo/${res.data.id}`, fileFormData)
+				api
+					.post(`/product/photo/${res.data.id}`, fileFormData)
 					.then((res) => {
-						alert("Foto berhasil diupload")
+						alert('Foto berhasil diupload');
 
 						location.reload(); // Fin
 					})
@@ -131,7 +137,7 @@
 					id="name"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="(Wajib)"
-          required
+					required
 				/>
 			</div>
 			<div class="mb-4">
@@ -146,13 +152,13 @@
 			<div class="mb-4">
 				<label for="price" class="text-sm font-bold mb-2">Harga</label>
 				<input
-						name="price"
-						bind:value={price}
-						on:change={formatPrice}
-						type="text"
-						id="price"
-						class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-						placeholder="(Wajib)"
+					name="price"
+					bind:value={price}
+					on:change={formatPrice}
+					type="text"
+					id="price"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="(Wajib)"
 				/>
 			</div>
 			<div class="mb-4">
@@ -161,26 +167,31 @@
 					name="category"
 					id="category"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-          required
+					required
 				>
-						<option selected value="food">Makanan</option>
-						<option value="drink">Minuman</option>
-						<option value="female_fashion">Fashion Wanita</option>
-						<option value="male_fashion">Fashion Pria</option>
-						<option value="child_fashion">Fashion Anak</option>
-						<option value="furniture">Perabotan</option>
-					</select>
+					<option selected value="food">Makanan</option>
+					<option value="drink">Minuman</option>
+					<option value="female_fashion">Fashion Wanita</option>
+					<option value="male_fashion">Fashion Pria</option>
+					<option value="child_fashion">Fashion Anak</option>
+					<option value="furniture">Perabotan</option>
+				</select>
 			</div>
 			<div class="mb-4">
 				<label for="image" class="text-sm font-bold mb-2">Gambar</label>
-				<img id="preview" class="size-32 my-2" src="https://placehold.co/600x400?text=Belum\nAda\nGambar" alt="Preview" />
+				<img
+					id="preview"
+					class="size-32 my-2"
+					src="https://placehold.co/600x400?text=Belum\nAda\nGambar"
+					alt="Preview"
+				/>
 				<input
-						on:change={handleImageUpload}
-						name="image"
-						type="file"
-						id="image"
-						class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-						placeholder="(Opsional)"
+					on:change={handleImageUpload}
+					name="image"
+					type="file"
+					id="image"
+					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
+					placeholder="(Opsional)"
 				/>
 			</div>
 			<button
@@ -197,15 +208,27 @@
 	</div>
 </dialog>
 
-<header class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50">
-  <div class="flex justify-center items-center">
-    <button on:click={() => sessionPage.set('profile')} type="button" class="me-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-      </svg>
-    </button>
-    <h1 class="text-md font-bold">Toko Anda</h1>
-  </div>
+<header
+	class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50"
+>
+	<div class="flex justify-center items-center">
+		<button on:click={() => sessionPage.set('profile')} type="button" class="me-2">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				fill="currentColor"
+				class="bi bi-arrow-left"
+				viewBox="0 0 16 16"
+			>
+				<path
+					fill-rule="evenodd"
+					d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+				/>
+			</svg>
+		</button>
+		<h1 class="text-md font-bold">Toko Anda</h1>
+	</div>
 </header>
 
 <div class={`overflow-x-hidden flex lg:items-center flex-col w-screen p-4`}>
@@ -255,17 +278,18 @@
 				/>
 			</div>
 
-			<br>
+			<br />
 
 			<div class="flex w-full items-center justify-center space-x-4 px-2">
 				<button
 					on:click={openCreateProductModal}
 					use:ripple
-					class="bg-french-violet w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Buat Produk Baru</button
+					class="bg-french-violet w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					>Buat Produk Baru</button
 				>
 			</div>
 
-			<br>
+			<br />
 
 			<!-- Products -->
 			<div class={`flex justify-center items-center flex-wrap max-h-full overflow-y-auto`}>
@@ -286,7 +310,7 @@
 					</svg>
 				{:else}
 					{#each products as data}
-						<ProductCard data={data} />
+						<ProductCard {data} />
 					{/each}
 				{/if}
 			</div>

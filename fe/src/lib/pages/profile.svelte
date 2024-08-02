@@ -68,10 +68,12 @@
 				throw new Error('Password baru dan konfirmasi password baru harus sama');
 			}
 
-			const formData = new FormData(form.target)
+			const formData = new FormData(form.target);
 			formData.append(`_method`, 'PUT');
 
-			const res = await api.post(`/auth/${parsedUserData.id}/password`, formData, { headers: { Authorization: `Bearer ${parsedUserData.remember_token}` } });
+			const res = await api.post(`/auth/${parsedUserData.id}/password`, formData, {
+				headers: { Authorization: `Bearer ${parsedUserData.remember_token}` }
+			});
 			alert(res.data.message);
 			location.reload();
 		} catch (err) {
@@ -99,11 +101,16 @@
 
 			const formData = new FormData();
 			formData.append('file', file);
-			const res = await api.post(`/user/avatar/${parsedUserData.id}`, formData, { headers: { Authorization: `Bearer ${parsedUserData.remember_token}` } });
+			const res = await api.post(`/user/avatar/${parsedUserData.id}`, formData, {
+				headers: { Authorization: `Bearer ${parsedUserData.remember_token}` }
+			});
 
-			localStorage.setItem('userData', JSON.stringify({ ...parsedUserData, avatar_id: res.data.id, avatar: res.data }));
+			localStorage.setItem(
+				'userData',
+				JSON.stringify({ ...parsedUserData, avatar_id: res.data.id, avatar: res.data })
+			);
 
-			alert("Avatar berhasil diperbarui");
+			alert('Avatar berhasil diperbarui');
 			location.reload();
 		} catch (err) {
 			console.log(err);
@@ -134,7 +141,7 @@
 					id="old_password"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="******************"
-          required
+					required
 				/>
 			</div>
 			<div class="mb-4">
@@ -145,7 +152,7 @@
 					id="new_password"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="******************"
-          required
+					required
 				/>
 			</div>
 			<div class="mb-6">
@@ -156,7 +163,7 @@
 					id="confirm_password"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="******************"
-          required
+					required
 				/>
 			</div>
 			<button
@@ -186,18 +193,26 @@
 	</div>
 </dialog>
 
-<div class={`lg:container overflow-x-hidden flex justify-center lg:items-center flex-col w-screen h-fit p-4`}>
+<div
+	class={`lg:container overflow-x-hidden flex justify-center lg:items-center flex-col w-screen h-fit p-4`}
+>
 	<!-- Profile -->
 	<div
 		class={`flex justify-start items-center w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}
 	>
 		<label use:ripple for="avatar" class="hover:cursor-pointer rounded-full me-4">
-			<input type="file" name="avatar" id="avatar" on:change={handleImageUpload} class="hidden">
-			<img src={parsedUserData.avatar ? store + parsedUserData.avatar.filename : userPlaceholder} alt="Profile" class="size-12 rounded-full" />
+			<input type="file" name="avatar" id="avatar" on:change={handleImageUpload} class="hidden" />
+			<img
+				src={parsedUserData.avatar ? store + parsedUserData.avatar.filename : userPlaceholder}
+				alt="Profile"
+				class="size-12 rounded-full"
+			/>
 		</label>
 		<div class="flex flex-col items-start">
 			<p class="text-md font-semibold">
-				{parsedUserData.first_name + ' ' + (parsedUserData.last_name || '')} (<span class="text-blue">@{parsedUserData.username}</span>)
+				{parsedUserData.first_name + ' ' + (parsedUserData.last_name || '')} (<span
+					class="text-blue">@{parsedUserData.username}</span
+				>)
 			</p>
 			<p class="text-sm opacity-50">{parsedUserData.email}</p>
 		</div>
@@ -207,13 +222,10 @@
 	<div
 		class={`flex justify-center flex-col w-full lg:w-[32%] h-fit p-4 bg-white mb-8 border border-grey rounded-lg shadow-xl`}
 	>
-			{#each [
-				{ icon: tokoBtn, label: 'Toko Anda', condition: isShop, callback: () => $sessionPage = 'toko' },
-				{ icon: securityBtn, label: 'Ubah Password', condition: true, callback: () => openModal('password_modal') },
-				{ icon: callBtn, label: 'Kontak Admin', condition: true, callback: () => { window.open('https://wa.me/number'); return; } },
-				{ icon: tosBtn, label: 'Ketentuan Layanan', condition: true, callback: () => openModal('tos_modal') },
-			] as item}
-
+		{#each [{ icon: tokoBtn, label: 'Toko Anda', condition: isShop, callback: () => ($sessionPage = 'toko') }, { icon: securityBtn, label: 'Ubah Password', condition: true, callback: () => openModal('password_modal') }, { icon: callBtn, label: 'Kontak Admin', condition: true, callback: () => {
+						window.open('https://wa.me/number');
+						return;
+					} }, { icon: tosBtn, label: 'Ketentuan Layanan', condition: true, callback: () => openModal('tos_modal') }] as item}
 			{#if item.condition}
 				<button
 					use:ripple

@@ -9,24 +9,26 @@
 
 	// import { userData } from '$lib/types/Sample';
 
-	$: message = "Memuat...";
+	$: message = 'Memuat...';
 
 	let products: ProductData[] | [] = [];
 	onMount(async () => {
-		const res = await api.get(`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}`);
+		const res = await api.get(
+			`/product/wishlist/${JSON.parse(localStorage.getItem('userData') || '{}').id}`
+		);
 		const wishlists = res.data as WishlistData[];
 
 		if (wishlists.length < 1) {
-			message = "Tidak ada produk favorit";
+			message = 'Tidak ada produk favorit';
 		}
 
 		const promises = wishlists.map(async (product) => {
-				const res = await api.get(`/product/${product.product_id}`);
-				return res.data;
+			const res = await api.get(`/product/${product.product_id}`);
+			return res.data;
 		});
 
 		products = await Promise.all(promises);
-	})
+	});
 </script>
 
 <div class={`overflow-x-hidden flex flex-col w-screen h-fit p-4`}>

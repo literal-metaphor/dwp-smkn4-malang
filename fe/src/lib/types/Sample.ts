@@ -64,20 +64,21 @@ export const ratingData: RatingData = {
 	rating: (Math.floor(Math.random() * 5) + 1) as 1 | 2 | 3 | 4 | 5,
 	created_at: '2020-01-01',
 	updated_at: '2020-01-01'
-}
+};
 
 export const commentData: CommentData = {
 	id: '1',
 	product_id: productData.id,
 	user: userData,
 	user_id: userData.id,
-	content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat laboriosam repudiandae dolorem ullam sit fuga quasi error ab. Architecto nihil illum sequi asperiores praesentium porro nisi qui voluptas exercitationem tempora.',
+	content:
+		'Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat laboriosam repudiandae dolorem ullam sit fuga quasi error ab. Architecto nihil illum sequi asperiores praesentium porro nisi qui voluptas exercitationem tempora.',
 	created_at: '2020-01-01',
 	updated_at: '2020-01-01'
-}
+};
 
 export const trolleyItemData: TrolleyItem = {
 	owner: userData,
 	product: productData,
 	quantity: 1
-}
+};

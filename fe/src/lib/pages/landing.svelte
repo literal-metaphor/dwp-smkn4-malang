@@ -13,11 +13,7 @@
 	// Depedencies
 	import { ripple } from 'svelte-ripple-action';
 	import { initializeApp } from 'firebase/app';
-	import {
-		GoogleAuthProvider,
-		getAuth,
-		signInWithPopup,
-	} from 'firebase/auth';
+	import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 	import { onMount } from 'svelte';
 	import { api } from '$lib/utils/api';
 	import { generateFromEmail } from 'unique-username-generator';
@@ -59,22 +55,25 @@
 			if (!form.target.email.value || !form.target.password.value) {
 				throw new Error('Email dan password harus diisi');
 			}
-				const formData = new FormData(form.target);
-				formData.set('username', generateFromEmail(form.target.email.value) + ((Math.floor(Math.random() * 9999))).toString());
-				if (!isRegister) {
-					formData.append(`_method`, 'PUT');
-				}
+			const formData = new FormData(form.target);
+			formData.set(
+				'username',
+				generateFromEmail(form.target.email.value) + Math.floor(Math.random() * 9999).toString()
+			);
+			if (!isRegister) {
+				formData.append(`_method`, 'PUT');
+			}
 
-				const authRes = await api.post(`/auth`, formData);
+			const authRes = await api.post(`/auth`, formData);
 
-				const userData: UserData = authRes.data;
-				if (!userData) {
-					throw new Error('Terjadi kesalahan. Mohon coba lagi nanti');
-				}
+			const userData: UserData = authRes.data;
+			if (!userData) {
+				throw new Error('Terjadi kesalahan. Mohon coba lagi nanti');
+			}
 
-				localStorage.setItem('userData', JSON.stringify(userData));
-				location.reload();
-			} catch (err) {
+			localStorage.setItem('userData', JSON.stringify(userData));
+			location.reload();
+		} catch (err) {
 			console.log(err);
 			if (err instanceof AxiosError) {
 				alert(err.response?.data.message);
@@ -109,7 +108,8 @@
 			}
 
 			const credentials = {
-				username: generateFromEmail(frbRes.user.email) + ((Math.floor(Math.random() * 9999))).toString(),
+				username:
+					generateFromEmail(frbRes.user.email) + Math.floor(Math.random() * 9999).toString(),
 				email: frbRes.user.email,
 				password: frbRes.user.uid,
 				first_name,
@@ -157,7 +157,7 @@
 					id="email"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="Masukkan Email"
-          required
+					required
 				/>
 			</div>
 			<div class={`mb-4 ${!isRegister && `hidden`}`}>
@@ -191,7 +191,7 @@
 					id="password"
 					class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
 					placeholder="******************"
-          required
+					required
 				/>
 				<div class="flex items-center my-2">
 					<label for="showPassword" class="text-sm font-bold me-2">Show Password</label>

@@ -80,15 +80,21 @@
 		<header
 			class="overflow-x-hidden w-screen h-fit p-4 lg:p-8 bg-white border border-grey flex justify-between items-center fixed top-0 z-50"
 		>
-			<button on:click={() => { sessionPage.set('landing'); location.reload() }} class="flex justify-center items-center">
-					<img src={logo} alt="Logo" class="me-4 size-12" />
+			<button
+				on:click={() => {
+					sessionPage.set('landing');
+					location.reload();
+				}}
+				class="flex justify-center items-center"
+			>
+				<img src={logo} alt="Logo" class="me-4 size-12" />
 				<h1 class="text-md font-bold">DWP Grafika Market</h1>
 			</button>
 			<button
 				use:ripple
 				class="{`rounded-full size-12 ms-8 p-3 mx-1 ${$sessionPage === 'troli' ? `bg-french-violet text-white` : ``} flex justify-center items-center active:scale-90 transition duration-300`}}"
 				on:click={() => {
-					setTimeout(() => sessionPage.set('troli'), 250)
+					setTimeout(() => sessionPage.set('troli'), 250);
 				}}
 			>
 				{#if $sessionPage === 'troli'}

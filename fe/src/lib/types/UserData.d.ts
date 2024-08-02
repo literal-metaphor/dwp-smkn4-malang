@@ -1,4 +1,4 @@
-import type { FileData } from "./FileData";
+import type { FileData } from './FileData';
 
 export default interface UserData {
 	id: string;

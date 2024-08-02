@@ -20,7 +20,9 @@
 	async function getProducts() {
 		if (productsPage > productsLastPage) return;
 		try {
-			const productsRes = await api.get(`/product/paginate${currentCategory !== 'all' ? `/category/${currentCategory}` : ``}?page=${productsPage}`);
+			const productsRes = await api.get(
+				`/product/paginate${currentCategory !== 'all' ? `/category/${currentCategory}` : ``}?page=${productsPage}`
+			);
 			products = [...products, ...productsRes.data.data];
 			productsPage++;
 			productsLastPage = productsRes.data.last_page;
@@ -53,24 +55,24 @@
 		{ value: 'furniture', label: 'Perabotan' }
 	];
 
-    // Search function
-    $: isSearch = false;
-    async function handleSearch(e: Event) {
-        const target = e.target as HTMLInputElement;
-        if (!target.value) {
-            products = [];
-            await getProducts();
-            isSearch = false;
-            return;
-        }
+	// Search function
+	$: isSearch = false;
+	async function handleSearch(e: Event) {
+		const target = e.target as HTMLInputElement;
+		if (!target.value) {
+			products = [];
+			await getProducts();
+			isSearch = false;
+			return;
+		}
 
-        try {
-            products = [];
-            const res = await api.get(`/product/search/${target.value}`);
-            products = res.data;
-            isSearch = true;
-        } catch (err) {
-            console.log(err);
+		try {
+			products = [];
+			const res = await api.get(`/product/search/${target.value}`);
+			products = res.data;
+			isSearch = true;
+		} catch (err) {
+			console.log(err);
 			switch (true) {
 				case err instanceof AxiosError:
 					alert(err.response?.data.message);
@@ -81,8 +83,8 @@
 				default:
 					alert('Terjadi kesalahan');
 			}
-        }
-    }
+		}
+	}
 
 	// Reactive values
 	$: currentCategory = 'all';
@@ -140,10 +142,10 @@
 				{#each categories as category}
 					<button
 						use:ripple
-                        on:click={async () => {
-                            products = [];
-                            await getProducts();
-                        }}
+						on:click={async () => {
+							products = [];
+							await getProducts();
+						}}
 						type="button"
 						class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit`}
 					>
@@ -175,7 +177,7 @@
 					</svg>
 				</div>
 				<input
-                    on:change={handleSearch}
+					on:change={handleSearch}
 					type="text"
 					id="search"
 					name="search"
@@ -195,7 +197,10 @@
 						<ProductCard data={productData} />
 					{/if}
 				{/each}
-				<InfiniteScroll threshold={products.length > 10 ? 10 : products.length - 1} on:loadMore={getProducts} />
+				<InfiniteScroll
+					threshold={products.length > 10 ? 10 : products.length - 1}
+					on:loadMore={getProducts}
+				/>
 				{#if !allLoaded}
 					<svg
 						class="animate-spin h-16 w-16 ms-4"
@@ -211,7 +216,7 @@
 							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 						></path>
 					</svg>
-				<!-- {:else} -->
+					<!-- {:else} -->
 					<!-- <p class="text-lg font-bold text-center">Semua produk sudah ditampilkan</p> -->
 				{/if}
 			</ul>
@@ -226,9 +231,9 @@
 				<button
 					use:ripple
 					on:click={async () => {
-                        products = [];
-                        await getProducts();
-                    }}
+						products = [];
+						await getProducts();
+					}}
 					type="button"
 					class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit`}
 				>
@@ -260,7 +265,7 @@
 				</svg>
 			</div>
 			<input
-                on:change={handleSearch}
+				on:change={handleSearch}
 				type="text"
 				id="search"
 				name="search"
@@ -280,7 +285,10 @@
 					<ProductCard data={productData} />
 				{/if}
 			{/each}
-			<InfiniteScroll threshold={products.length > 10 ? 10 : products.length - 1} on:loadMore={getProducts} />
+			<InfiniteScroll
+				threshold={products.length > 10 ? 10 : products.length - 1}
+				on:loadMore={getProducts}
+			/>
 			{#if !allLoaded}
 				<svg
 					class="animate-spin h-16 w-16 ms-4"
@@ -296,7 +304,7 @@
 						d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 					></path>
 				</svg>
-			<!-- {:else} -->
+				<!-- {:else} -->
 				<!-- <p class="text-lg font-bold text-center">Semua produk sudah ditampilkan</p> -->
 			{/if}
 		</ul>
