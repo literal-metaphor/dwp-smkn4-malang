@@ -22,6 +22,7 @@ export default {
 			},
 			colors: {
 				grey: '#D1D5DB',
+				success: '#4CBB17',
 				red: '#FF0000',
 				blue: '#125FF3',
 				'clear-grey': '#8F8F8F',

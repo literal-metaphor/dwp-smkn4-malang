@@ -56,7 +56,6 @@
   function setDeliveryLocation(e: CustomEvent<MapMouseEvent>) {
     currentLng = e.detail.lngLat.lng;
     currentLat = e.detail.lngLat.lat;
-    console.log(`https://www.google.com/maps/search/${currentLat},${currentLng}/@${currentLat},${currentLng}m/data=!3m1!1e3?entry=ttu`);
   }
   async function finalizeCodDelivery(e: SubmitEvent) {
     e.preventDefault();
@@ -69,7 +68,7 @@
     const address_criteria = formInput.get('address_criteria') as string;
 
     const customer_id = JSON.parse(localStorage.getItem('userData') || '{}').id;
-    const full_criteria = `Nama : ${customer_name} \n Lokasi: ${area} \n Kecamatan: ${district} \n Kabupaten  Kota: ${city} \n Informasi Tambahan: ${address_criteria}`;
+    const full_criteria = `Nama : ${customer_name} <br/> Lokasi: ${area} <br/> Kecamatan: ${district} <br/> Kabupaten  Kota: ${city} <br/> Informasi Tambahan: ${address_criteria}`;
 
     let itemsArr = [];
     for (const item of items) {

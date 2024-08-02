@@ -2,7 +2,7 @@ import type ProductData from './ProductData';
 
 export default interface TransactionItemData {
 	id: string;
-	product: Omit<ProductData, 'owner'>?;
+	product: ProductData?;
 	product_id: string;
 	quantity: number;
 	status: 'pending' | 'delivered';

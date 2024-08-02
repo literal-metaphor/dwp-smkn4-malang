@@ -50,6 +50,9 @@ export const transactionData: TransactionData = {
 	customer: userData,
 	items: [transactionItemData, transactionItemData, transactionItemData],
 	method: 'cod',
+	latitude: 0,
+	longitude: 0,
+	address_criteria: 'address criteria',
 	created_at: '2020-01-01',
 	updated_at: '2020-01-01'
 };

@@ -7,6 +7,9 @@ export default interface TransactionData {
 	customer_id: string;
 	items: TransactionItemData[];
 	method: 'cod';
+	latitude: number;
+	longitude: number;
+	address_criteria: string;
 	created_at: string;
 	updated_at: string;
 }

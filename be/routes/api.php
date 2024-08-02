@@ -78,10 +78,12 @@ Route::prefix('v1')->group(function () {
     Route::prefix('/transaction')->group(function () {
         Route::get('/{id}', [TransactionController::class, 'show']);
         Route::post('/', [TransactionController::class, 'store']);
+        Route::get('/user/{user_id}', [TransactionController::class, 'indexByUser']);
+        Route::put('/confirm/{id}', [TransactionController::class, 'confirmDelivery']);
 
         Route::middleware([AdminOnly::class])->group(function () {
             Route::get('/', [TransactionController::class, 'index']);
-            // Route::put('/{id}', [TransactionController::class, 'update']); // I'm not sure there would be an instance where admin would need to update a transaction detail, so I'm not implementing update yet.
+            Route::put('/{id}', [TransactionController::class, 'update']);
             Route::delete('/{id}', [TransactionController::class, 'destroy']);
         });
     });
