@@ -8,8 +8,8 @@
 	import { ripple } from 'svelte-ripple-action';
 
 	// Get products
-	let products: ProductData[] | [] = [];
-	let allProducts: ProductData[] | [] = [];
+	$: products = [] as ProductData[];
+	$: allProducts = [] as ProductData[];
 	async function getProducts() {
 		try {
 			const productsRes = await api.get(
@@ -119,7 +119,7 @@
 			products = allProducts;
 		} else {
 			const all = allProducts;
-			products = all.filter((product) => product.name.includes(target.value)); // Make it more complex in the future
+			products = all.filter((product: ProductData) => product.name.includes(target.value)); // Make it more complex in the future
 		}
 	}
 </script>
@@ -247,7 +247,7 @@
 
 		<div class="flex flex-col col-span-12 //lg:col-span-9 min-h-full">
 			<!-- Search bar -->
-			<label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
+			<!-- <label for="search" class={`mb-2 text-sm font-medium text-gray-900 sr-only`}>Search</label>
 			<div class={`relative p-1`}>
 				<div class={`absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none`}>
 					<svg
@@ -278,7 +278,7 @@
 				/>
 			</div>
 
-			<br />
+			<br /> -->
 
 			<div class="flex w-full items-center justify-center space-x-4 px-2">
 				<button

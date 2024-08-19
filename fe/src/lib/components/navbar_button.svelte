@@ -1,12 +1,48 @@
 <script lang="ts">
 	import { sessionPage } from '$lib/utils/page';
+	import beranda from '$lib/assets/beranda.svg';
+	import berandaactive from '$lib/assets/berandaactive.svg';
+	import koleksi from '$lib/assets/koleksi.svg';
+	import koleksiactive from '$lib/assets/koleksiactive.svg';
+	import riwayat from '$lib/assets/riwayat.svg';
+	import riwayatactive from '$lib/assets/riwayatactive.svg';
+	import profile from '$lib/assets/profile.svg';
+	import profileactive from '$lib/assets/profileactive.svg';
 
 	export let option: string;
 	const options: string[] = ['beranda', 'koleksi', 'riwayat', 'profile'];
+	const images: { name: string; image: string; active: string }[] = [
+		{
+			name: 'beranda',
+			image: beranda,
+			active: berandaactive
+		},
+		{
+			name: 'koleksi',
+			image: koleksi,
+			active: koleksiactive
+		},
+		{
+			name: 'riwayat',
+			image: riwayat,
+			active: riwayatactive
+		},
+		{
+			name: 'profile',
+			image: profile,
+			active: profileactive
+		}
+	];
 
 	$: isActive = $sessionPage === option;
 
 	import { ripple } from 'svelte-ripple-action';
+
+	// Find the image object that matches the option
+	const imageObject = images.find(img => img.name === option);
+
+	// Set the image source based on the option and isActive status
+	$: imageSrc = imageObject ? (isActive ? imageObject.active : imageObject.image) : '';
 </script>
 
 <button
@@ -18,7 +54,7 @@
 	}}
 >
 	<img
-		src={options.includes(option) ? `/src/lib/assets/${option}${isActive ? `active` : ``}.svg` : ``}
+		src={imageSrc}
 		alt={option}
 		class="size-6 mb-1"
 	/>
