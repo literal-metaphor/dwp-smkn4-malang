@@ -23,6 +23,7 @@
 			const productsRes = await api.get(
 				`/product/paginate${currentCategory !== 'all' ? `/category/${currentCategory}` : ``}?page=${productsPage}`
 			);
+			console.log(productsRes);
 			products = [...products, ...productsRes.data.data];
 			productsPage++;
 			productsLastPage = productsRes.data.last_page;
@@ -91,7 +92,7 @@
 	$: filteredProducts = products.filter(
 		(productData) => currentCategory === 'all' || currentCategory === productData.category
 	);
-	$: allLoaded = productsPage >= productsLastPage;
+	$: allLoaded = productsPage > productsLastPage;
 </script>
 
 <div class={`lg:container overflow-x-hidden flex flex-col w-screen h-fit p-4`}>
@@ -127,7 +128,13 @@
 			{#each categories as category}
 				<button
 					use:ripple
-					on:click={() => (currentCategory = category.value)}
+					on:click={async () => {
+						currentCategory = category.value;
+						productsPage = 1;
+						productsLastPage = 1;
+						products = [];
+						await getProducts();
+					}}
 					type="button"
 					class={`my-1 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white border border-grey`} rounded-full text-sm px-4 py-2 w-full transition duration-300 text-nowrap min-w-fit `}
 				>
@@ -143,6 +150,9 @@
 					<button
 						use:ripple
 						on:click={async () => {
+							currentCategory = category.value;
+							productsPage = 1;
+							productsLastPage = 1;
 							products = [];
 							await getProducts();
 						}}
@@ -231,9 +241,12 @@
 				<button
 					use:ripple
 					on:click={async () => {
-						products = [];
-						await getProducts();
-					}}
+							currentCategory = category.value;
+							productsPage = 1;
+							productsLastPage = 1;
+							products = [];
+							await getProducts();
+						}}
 					type="button"
 					class={`me-2 ${currentCategory === category.value ? `text-white bg-french-violet` : `text-black bg-white`} rounded-full text-sm px-4 py-2 transition duration-300 text-nowrap min-w-fit`}
 				>

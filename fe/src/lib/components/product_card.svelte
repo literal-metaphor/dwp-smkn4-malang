@@ -11,25 +11,53 @@
 	import type { FileData } from '$lib/types/FileData';
 	import { onMount } from 'svelte';
 	import { api, store } from '$lib/utils/api';
+	import { all } from 'axios';
 
-	$: image = {} as FileData;
+	$: image = {} as FileData | null;
 	let allLoaded = false;
 
 	onMount(async () => {
-		const res = await api.get(`/product/photo/${data.id}`);
-		image = res.data[0];
-		data.images?.push(image.filename);
+		if (!localStorage.getItem(`product_images`)) localStorage.setItem(`product_images`, JSON.stringify([]));
+		const imageCache = JSON.parse(localStorage.getItem(`product_images`)!) as FileData[];
+		const currentImage = imageCache.find((img) => img.id === data.id);
+
+		if (currentImage) {
+			image = currentImage;
+			data.images?.push(image.filename);
+			allLoaded = true;
+			return;
+		} else {
+			const res = await api.get(`/product/photo/${data.id}`);
+			const imageRes = res.data[0] as FileData;
+			if (imageRes) {
+				imageRes.id = data.id;
+				image = res.data[0] as FileData;
+				data.images?.push(image.filename);
+
+				localStorage.setItem(`product_images`, JSON.stringify([...imageCache, image]));
+			} else image = null;
+		}
+
+		// if (imageCache) {
+		// 	image = JSON.parse(imageCache)[0];
+		// 	data.images?.push(image.filename);
+		// } else {
+		// 	const res = await api.get(`/product/photo/${data.id}`);
+		// 	image = res.data[0];
+		// 	data.images?.push(image.filename);
+
+		// 	localStorage.setItem(`product_images`, JSON.stringify([...JSON.parse(imageCache), image.filename]));
+		// }
 
 		allLoaded = true;
 	});
 </script>
 
 <div class={`w-[40vw] lg:w-[12vw] p-2 border border-grey rounded-lg m-2`}>
-	{#if image}
-		{#if image.filename}
+		{#if image && image.filename}
 			<img src={store + image.filename} alt="Product" class={`w-full h-48 rounded-lg`} />
 		{:else}
-			<svg
+			<!-- <svg
 				class="animate-spin h-16 w-16 mx-auto"
 				xmlns="http://www.w3.org/2000/svg"
 				fill="none"
@@ -42,11 +70,9 @@
 					fill="#125FF3"
 					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 				></path>
-			</svg>
-		{/if}
-	{:else}
-		<img src={noimage} alt="Product" class={`w-full h-48 rounded-lg`} />
-	{/if}
+			</svg> -->
+			<img src={noimage} alt="Product" class={`w-full h-48 rounded-lg`} />
+			{/if}
 
 	<h3 class={`text-md font-medium text-center my-2`}>
 		{data.name.length > 10 ? data.name.slice(0, 10) + '...' : data.name}

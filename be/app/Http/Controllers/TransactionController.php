@@ -213,8 +213,8 @@ class TransactionController extends Controller
      */
     public function confirmDelivery(Request $req, string $id) {
         try {
-            $this->assertAuthorized($req, $id);
             $transaction_item = TransactionItem::findOrFail($id);
+            // $this->assertAuthorized($req, $transaction_item->transaction_id);
             $transaction_item->update(['status' => 'delivered', 'delivery_date' => Carbon::now()]);
             return response()->json($transaction_item);
         } catch (\Throwable $e) {
