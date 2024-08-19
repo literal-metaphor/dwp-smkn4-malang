@@ -23,7 +23,6 @@
 			const productsRes = await api.get(
 				`/product/paginate${currentCategory !== 'all' ? `/category/${currentCategory}` : ``}?page=${productsPage}`
 			);
-			console.log(productsRes);
 			products = [...products, ...productsRes.data.data];
 			productsPage++;
 			productsLastPage = productsRes.data.last_page;

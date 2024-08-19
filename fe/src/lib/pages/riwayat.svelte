@@ -12,13 +12,35 @@
 	import { transactionData } from '$lib/types/Sample';
 	import { DefaultMarker, MapLibre } from 'svelte-maplibre';
 	import { AxiosError } from 'axios';
+	import type { FileData } from '$lib/types/FileData';
 
 	$: transactions = [] as TransactionData[];
 	onMount(async () => {
 		const res = await api.get(
 			`/transaction/user/${JSON.parse(localStorage.getItem('userData') || '{}').id}`
 		);
-		transactions = res.data;
+		transactions = res.data as TransactionData[];
+
+		let virtualTransactions = transactions;
+		for (const transaction of virtualTransactions) {
+			for (const item of transaction.items) {
+				if (item.product) {
+					const imageCache = localStorage.getItem('product_images');
+					if (imageCache) {
+						const parsedImageCache = JSON.parse(imageCache);
+						const currentImage = parsedImageCache.find((image: FileData) => image.id === item.product?.id);
+						if (currentImage) {
+							item.product.images = [currentImage.filename];
+						}
+					} else {
+						const res = await api.get(`/product/photo/${item.product.id}`);
+						item.product.images = [(res.data as FileData[])[0].filename];
+					}
+				}
+			}
+		}
+
+		transactions = virtualTransactions;
 	});
 	$: filteredTransactions = transactions;
 
